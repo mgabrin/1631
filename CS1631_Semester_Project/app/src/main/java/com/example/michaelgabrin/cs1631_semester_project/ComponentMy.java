@@ -9,7 +9,7 @@ public class ComponentMy implements ComponentBase {
     }
 
     public KeyValueList processMsg(KeyValueList kvList){
-        KeyValueList v = new KeyValueList();
-        return v;
+        System.out.println("In the component!");
+        return kvList;
     }
 }
