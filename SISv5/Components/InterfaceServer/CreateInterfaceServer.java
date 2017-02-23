@@ -86,29 +86,56 @@ Class MsgEncoder:
 Serialize the KeyValue List and Send it out to a Stream.
 */
 class MsgEncoder{
-private PrintStream printOut;
-/* Default of delimiter in system is $$$ */
-private final String delimiter="$$$";
+	private PrintStream printOut;
+	/* Default of delimiter in system is $$$ */
+	private final String delimiter="$$$";
 
-public MsgEncoder(){
+	// used for writing Strings
+//	private PrintStream printOut;
+
+	public MsgEncoder(OutputStream out){
+		printOut= new PrintStream(out);
+	}
+
+	/* Encode the Key Value List into a string and Send it out */
+	public void sendMsg(KeyValueList kvList) throws IOException{
+//		PrintStream printOut= new PrintStream(out);
+		if (kvList==null) return;
+			String outMsg= new String();
+		for(int i=0; i<kvList.size();i++){
+			if (outMsg.equals(""))
+			outMsg=kvList.keyAt(i)+delimiter + kvList.valueAt(i);
+			else
+			outMsg+=delimiter+kvList.keyAt(i)+delimiter + kvList.valueAt(i);
+		}
+		System.out.println(outMsg);
+		printOut.println(outMsg);
+		System.out.println(printOut.checkError());
+		printOut.flush();
+	}
 }
 
-/* Encode the Key Value List into a string and Send it out */
+/*
+class MsgEncoder {
 
-public void sendMsg(KeyValueList kvList, OutputStream out) throws IOException{
-PrintStream printOut= new PrintStream(out);
-if (kvList==null) return;
-String outMsg= new String();
-for(int i=0; i<kvList.size();i++){
-if (outMsg.equals(""))
-outMsg=kvList.keyAt(i)+delimiter + kvList.valueAt(i);
-else
-outMsg+=delimiter+kvList.keyAt(i)+delimiter + kvList.valueAt(i);
-}
-//System.out.println(outMsg);
-printOut.println(outMsg);
-}
-}
+	// used for writing Strings
+	private PrintStream writer;
+
+
+	public MsgEncoder(OutputStream out) throws IOException {
+		writer = new PrintStream(out);
+	}
+
+
+	public void sendMsg(KeyValueList kvList) throws IOException {
+		if (kvList == null || kvList.size() < 1) {
+			return;
+		}
+
+		writer.println(kvList.encodedString());
+		writer.flush();
+	}
+}*/
 
 /*
 Class MsgDecoder:
@@ -170,26 +197,41 @@ Class InterfaceServer
 Set up a socket server waiting for the remote to connect.
 */
 
-public class CreateInterfaceServer
-{
+public class CreateInterfaceServer{
+	static MsgDecoder mDecoder;//= new MsgDecoder(client.getInputStream());
+	static MsgEncoder mEncoder;//= new MsgEncoder(client.getOutputStream());
 
    public static final int port=7999;
 
-   public static void main(String[] args) throws Exception
-   {
+   public static void main(String[] args) throws Exception{
     System.out.println("in");
-    ServerSocket server = new ServerSocket(port);
+    //ServerSocket server = new ServerSocket(port);
     System.out.println("1");
     ComponentBase compMy= new MyComponent();
     System.out.println("2");
-    Socket client = server.accept();
+    //Socket client = server.accept();
+    Socket client = new Socket("127.0.0.1", 53217);
+
+    System.out.println(client);
     System.out.println("3");
     try{
-      MsgDecoder mDecoder= new MsgDecoder(client.getInputStream());
-      MsgEncoder mEncoder= new MsgEncoder();
+      mDecoder= new MsgDecoder(client.getInputStream());
+      System.out.println("3a");
+      mEncoder= new MsgEncoder(client.getOutputStream());
+
+      KeyValueList conn = new KeyValueList();
+      conn.addPair("Scope", "SIS.Scope1");
+      conn.addPair("MessageType", "Connect");
+      conn.addPair("Role", "Basic");
+      conn.addPair("Name", "InterfaceServer");
+      mEncoder.sendMsg(conn);
+
+      System.out.println("3b");
       KeyValueList kvInput,kvOutput;
-      do
+			kvInput=mDecoder.getMsg();
+      /*do
       {
+        System.out.println("3c");
         kvInput=mDecoder.getMsg();
         System.out.println("4");
         if (kvInput!=null) {
@@ -198,13 +240,13 @@ public class CreateInterfaceServer
           KeyValueList kvResult=compMy.processMsg(kvInput);
           System.out.println("Outgoing Message:\n");
           System.out.println(kvResult);
-          mEncoder.sendMsg(kvResult,client.getOutputStream());
+          mEncoder.sendMsg(kvResult);
        }
       }
-      while (kvInput != null);
+      while (true);*/
    }
-   catch (SocketException e){
-   System.out.println("Connection was Closed by Client");
+   catch (Exception e){
+   	e.printStackTrace();
   }
  }
 }
@@ -212,6 +254,7 @@ public class CreateInterfaceServer
 class MyComponent implements ComponentBase{
  public KeyValueList processMsg(KeyValueList kvList) {
    System.out.println("In component!");
+   kvList.addPair("Firstname", "Ben");
    System.out.println(kvList);
    return kvList;
  }

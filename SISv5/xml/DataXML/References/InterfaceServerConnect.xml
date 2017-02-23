@@ -7,7 +7,7 @@
 	</Item>
 	<Item>
 		<Key>MessageType</Key>
-		<Value>Register</Value>
+		<Value>Connect</Value>
 	</Item>
 	<Item>
 		<Key>Role</Key>
