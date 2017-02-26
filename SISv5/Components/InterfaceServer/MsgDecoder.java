@@ -23,9 +23,7 @@ class MsgDecoder {
         KeyValueList kvList = new KeyValueList();
         StringBuilder builder = new StringBuilder();
 
-        System.out.println("111111");
         String message = reader.readLine();
-        System.out.println("2222222222");
         if (message != null && message.length() > 2) {
 
             builder.append(message);

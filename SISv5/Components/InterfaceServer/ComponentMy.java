@@ -17,32 +17,32 @@ class MyComponent implements ComponentBase{
         KeyValueList conn = new KeyValueList();
 
         if(kvList.getValue("Head") != ""){
-            System.out.println(kvList.getValue("Head"));
-
-            //Assume that we get the msgId at some point above this
-            if(msgId == 21){
-
-            } else if(msgId == 22){
-
-            } else if(msgId == 23){
-
-            } else if(msgId == 24){
-
-            } else if(msgId == 25){
-
-            } else if(msgId == 26){
-
-            } else if(msgId == 701){
-
-            } else if(msgId == 702){
-
-            } else if(msgId == 703){
-
-            } else if(msgId == 711){
-
-            } else if(msgId == 712){
-
-            }
+//            System.out.println(kvList.getValue("Head"));
+//
+//            //Assume that we get the msgId at some point above this
+//            if(msgId == 21){
+//
+//            } else if(msgId == 22){
+//
+//            } else if(msgId == 23){
+//
+//            } else if(msgId == 24){
+//
+//            } else if(msgId == 25){
+//
+//            } else if(msgId == 26){
+//
+//            } else if(msgId == 701){
+//
+//            } else if(msgId == 702){
+//
+//            } else if(msgId == 703){
+//
+//            } else if(msgId == 711){
+//
+//            } else if(msgId == 712){
+//
+//            }
         } else{
             System.out.println(kvList.getValue("Sender"));
             conn.addPair("Scope", "SIS.Scope1");

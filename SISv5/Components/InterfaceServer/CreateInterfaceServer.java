@@ -47,19 +47,13 @@ public class CreateInterfaceServer{
    public static final int port=7999;
 
    public static void main(String[] args) throws Exception{
-    System.out.println("in");
     //ServerSocket server = new ServerSocket(port);
-    System.out.println("1");
     ComponentBase compMy= new MyComponent();
-    System.out.println("2");
     //Socket client = server.accept();
-    client = connect();//new Socket("127.0.0.1", 53217);
+    client = connect(); //new Socket("127.0.0.1", 53217);
 
-    System.out.println(client);
-    System.out.println("3");
     try{
       mDecoder= new MsgDecoder(client.getInputStream());
-      System.out.println("3a");
       mEncoder= new MsgEncoder(client.getOutputStream());
 
       KeyValueList conn = new KeyValueList();
@@ -69,13 +63,10 @@ public class CreateInterfaceServer{
       conn.addPair("Name", "InterfaceServer");
       mEncoder.sendMsg(conn);
 
-      System.out.println("3b");
       KeyValueList kvInput,kvOutput;
       while(true)
       {
-        System.out.println("3c");
         kvInput=mDecoder.getMsg();
-        System.out.println("4");
         if (kvInput!=null) {
           System.out.println("Incomming Message:\n");
           System.out.println(kvInput);
