@@ -35,7 +35,6 @@ public class CreateInputProcessor {
             socket = new Socket("127.0.0.1", 53217);
             mEncoder = new MsgEncoder(socket.getOutputStream());
             mEncoder.sendMsg(conn);
-            System.out.println(mDecoder.getMsg());
         } catch(Exception e){
             System.out.println(e);
         }
@@ -78,12 +77,12 @@ public class CreateInputProcessor {
 
                         KeyValueList newVote = new KeyValueList();
                         newVote.addPair("Scope", "SIS.Scope1");
-                        newVote.addPair("MessageType", "Confirm");
-                        newVote.addPair("Sender", "SISServer");
+                        newVote.addPair("MessageType", "Alert");
+                        newVote.addPair("Sender", "InputProcessor");
                         newVote.addPair("Receiver", "InterfaceServer");
+                        newVote.addPair("MessageCode", "701");
 
                         mEncoder.sendMsg(newVote);
-                        mDecoder.getMsg();
                         exit = true;
                     }
                 }
