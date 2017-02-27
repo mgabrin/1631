@@ -16,6 +16,7 @@ public class CreateInputProcessor {
 
     static Socket socket;
     static MsgEncoder mEncoder;
+    static MsgDecoder mDecoder;
 
     public static void main(String[] args) {
         String host = "pop.gmail.com";
@@ -34,6 +35,7 @@ public class CreateInputProcessor {
             socket = new Socket("127.0.0.1", 53217);
             mEncoder = new MsgEncoder(socket.getOutputStream());
             mEncoder.sendMsg(conn);
+            System.out.println(mDecoder.getMsg());
         } catch(Exception e){
             System.out.println(e);
         }
@@ -76,13 +78,12 @@ public class CreateInputProcessor {
 
                         KeyValueList newVote = new KeyValueList();
                         newVote.addPair("Scope", "SIS.Scope1");
-                        newVote.addPair("MessageType", "701");
+                        newVote.addPair("MessageType", "Confirm");
+                        newVote.addPair("Sender", "SISServer");
                         newVote.addPair("Receiver", "InterfaceServer");
-                        newVote.addPair("Role","Basic");
-                        newVote.addPair("EmailAddress", "test@gmail.com");
-                        newVote.addPair("Vote", "1");
 
                         mEncoder.sendMsg(newVote);
+                        mDecoder.getMsg();
                         exit = true;
                     }
                 }
