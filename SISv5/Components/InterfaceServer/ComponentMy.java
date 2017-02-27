@@ -14,53 +14,58 @@ class MyComponent implements ComponentBase {
         System.out.println("Here is kvList:");
         System.out.println(kvList);
 
-        msgId = kvList.getValue("MessageType");
+        String msgId = kvList.getValue("MessageCode");
 
         KeyValueList conn = new KeyValueList();
 
         conn.addPair("Scope", "SIS.Scope1");
-        conn.addPair("MessageType", "711");
-        conn.addPair("Sender", "SISServer");
-        conn.addPair("Receiver", "InterfaceServer");
+        conn.addPair("MessageType", "Confirm");
+        conn.addPair("Sender", "InterfaceServer");
+        conn.addPair("Receiver", "Remote");
+
+
 
         //Create Component
-        if (msgId == 21) {
-
-        } else if (msgId == 22) { //Kill component
+        if (msgId.equals("21")) {
+            System.out.println("Hello");
+        } else if (msgId.equals("22")) { //Kill component
             System.exit(0);
-        } else if (msgId == 23) { //Connect to server
-
-        } else if (msgId == 24) { //Activate Component
-
-        } else if (msgId == 25) { //Deactivate component
-
-        } else if (msgId == 26) { //Acknowledgement
+        } else if (msgId.equals("23")) { //Connect to server
+            System.out.println("Hello");
+        } else if (msgId.equals("24")) { //Activate Component
+            System.out.println("Hello");
+        } else if (msgId.equals("25")) { //Deactivate component
+            System.out.println("Hello");
+        } else if (msgId.equals("26")) { //Acknowledgement
             conn.addPair("MessageType", "Confirm");
-        } else if (msgId == 701) { //Cast Vote
+        } else if (msgId.equals("701")) { //Cast Vote
+            System.out.println("Casting a vote!");
             String voter = kvList.getValue("Voter");
             String vote = kvList.getValue("Vote");
 
             if(checkVoter(voter)) {
-                voterTable.put(Voter, vote);
+                voterTable.put(voter, vote);
             }
             placeVote(vote);
 
             //Crafting the message to acknowledge the vote
-            conn.addPair("MessageType", "711");
-        } else if (msgId == 702) { //Request Report
-            conn.addPair("MessageType", "711")
+            //conn.addPair("MessageCode", "711");
+        } else if (msgId.equals("702")) { //Request Report
+            conn.addPair("MessageCode", "711");
             for(Map.Entry<String, Integer> entry : tallyTable.entrySet()){
-                conn.addPair(entry.getKey(), entry.getValue())
+                conn.addPair(entry.getKey(), entry.getValue().toString());
             }
-        } else if (msgId == 703) { //Initialize Tally Table
+        } else if (msgId.equals("703")) { //Initialize Tally Table
             tallyTable = new HashMap<>();
-            conn.addPair("MessageType", "Confirm");
-        } else if (msgId == 711) { //Acknowledge Vote (this probably doesn't need its own case
-            conn.addPair("MessageType", "Confirm");
-        } else if (msgId == 712) { //Acknowledge Request Report
-
+            conn.addPair("MessageCode", "711");
+        } else if (msgId.equals("711")) { //Acknowledge Vote (this probably doesn't need its own case
+            System.out.println("Hello");
+            //conn.addPair("MessageType", "Confirm");
+        } else if (msgId.equals("712")) { //Acknowledge Request Report
+            System.out.println("Hello");
         } else {
-            conn.addPair("MessageType", "Confirm");
+            System.out.println("Hello");
+            //conn.addPair("MessageType", "Confirm");
         }
 
         return conn;
