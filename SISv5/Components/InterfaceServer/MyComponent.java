@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 class MyComponent implements ComponentBase {
 
-    static String passcode = 'm1k3+b3n';
+    static String passcode = "m1k3+b3n";
     HashMap<String, String> voterTable = new HashMap<>();
     HashMap<String, Integer> tallyTable = new HashMap<>();
 
@@ -17,14 +17,14 @@ class MyComponent implements ComponentBase {
         KeyValueList conn = new KeyValueList();
 
         conn.addPair("Scope", "SIS.Scope1");
-        conn.addPair("MessageType", "Confirm");
+        conn.addPair("MessageType", "Alert");
         conn.addPair("Sender", "InterfaceServer");
-        conn.addPair("Receiver", "Remote");
+        conn.addPair("Receiver", "InputProcessor");
         conn.addPair("MessageCode", "711");
 
         //Create Component
         if (msgId.equals("21")) {
-            System.out.println("Hello");
+            System.out.println("Create Component");
         } else if (msgId.equals("22")) { //Kill component (done)
             if(kvList.getValue("Passcode").equals(passcode)){
                 System.exit(0);
@@ -44,24 +44,24 @@ class MyComponent implements ComponentBase {
                 conn.addPair("Status", "2");
             }
         } else if (msgId.equals("24")) { //Activate Component
-            System.out.println("Hello");
+            System.out.println("Activate Component");
         } else if (msgId.equals("25")) { //Deactivate component
-            System.out.println("Hello");
+            System.out.println("Deactivate Component");
         } else if (msgId.equals("26")) { //Acknowledgement
             conn.addPair("MessageType", "Confirm");
         } else if (msgId.equals("701")) { //Cast Vote (done)
-            if(kvList.getValue("Subject").equals("CS1631 Vote")){
+            //if(kvList.getValue("Subject").equals("CS1631 Vote")){
                 if(checkEmail(kvList.getValue("Vote")) && checkVoter(kvList.getValue("Voter"))) {
-                    voterTable.put(kvList.getValue("Voter"), vote);
+                    voterTable.put(kvList.getValue("Voter"), kvList.getValue("Voter"));
                     tallyTable.put(kvList.getValue("Vote"), tallyTable.get(kvList.getValue("Vote"))+1);
                 }
                 Integer status = checkEmail(kvList.getValue("Vote")) ? (checkVoter(kvList.getValue("Voter")) ? 3 : 1) : 2;
                 conn.addPair("Status", status.toString());
-            } else {
-                return null;
-            }
+           // } else {
+                //return null;
+           // }
         } else if (msgId.equals("702")) { //Request Report (needs to be tested)
-            if(kv.getValue("Passcode").equals(passcode)){
+            if(kvList.getValue("Passcode").equals(passcode)){
                 for(Map.Entry<String, Integer> entry : tallyTable.entrySet()){
                     conn.addPair(entry.getKey(), entry.getValue().toString());
                 }
@@ -78,14 +78,6 @@ class MyComponent implements ComponentBase {
             } else {
                 conn.addPair("Status", "2");
             }
-        } else if (msgId.equals("711")) { //Acknowledge Vote (this probably doesn't need its own case
-            System.out.println("Hello");
-            //conn.addPair("MessageType", "Confirm");
-        } else if (msgId.equals("712")) { //Acknowledge Request Report
-            System.out.println("Hello");
-        } else {
-            System.out.println("Hello");
-            //conn.addPair("MessageType", "Confirm");
         }
 
         return conn;

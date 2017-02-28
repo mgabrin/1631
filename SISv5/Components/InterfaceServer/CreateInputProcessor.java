@@ -25,6 +25,7 @@ public class CreateInputProcessor {
         try{
             socket = new Socket("127.0.0.1", 53217);
             mEncoder = new MsgEncoder(socket.getOutputStream());
+            mDecoder = new MsgDecoder(socket.getInputStream());
             mEncoder.sendMsg(conn);
         } catch(Exception e){
             System.out.println(e);
