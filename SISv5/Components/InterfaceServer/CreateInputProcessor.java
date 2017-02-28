@@ -1,17 +1,8 @@
-import java.util.Properties;
 import java.util.*;
-
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Store;
-import java.util.concurrent.TimeUnit;
-import javax.mail.search.FlagTerm;
 import javax.mail.*;
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.TimeUnit;
 public class CreateInputProcessor {
 
     static Socket socket;
@@ -42,60 +33,91 @@ public class CreateInputProcessor {
     }
 
     public static void check(String host, String storeType, String user, String password) {
-        try {
+        try
+        {
+          //create properties field
+          Properties properties = new Properties();
 
+          properties.put("mail.pop3.host", host);
+          properties.put("mail.pop3.port", "995");
+          properties.put("mail.pop3.starttls.enable", "true");
+          Session emailSession = Session.getInstance(properties, new javax.mail.Authenticator(){
+              protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                  return new javax.mail.PasswordAuthentication(user, password);
+              }
+          });
 
-            //create properties field
-            Properties properties = new Properties();
+          //create the POP3 store object and connect with the pop server
+          Store store = emailSession.getStore("pop3s");
+          store.connect(host, user, password);
 
-            properties.put("mail.pop3.host", host);
-            properties.put("mail.pop3.port", "995");
-            properties.put("mail.pop3.starttls.enable", "true");
-            Session emailSession = Session.getInstance(properties, new javax.mail.Authenticator(){
-                protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
-                    return new javax.mail.PasswordAuthentication(user, password);
-                }
-            });
+          //create the folder object and open it
+          Folder emailFolder = store.getFolder("INBOX");
+          emailFolder.open(Folder.READ_ONLY);
 
-            //create the POP3 store object and connect with the pop server
-            Store store = emailSession.getStore("pop3s");
-            store.connect(host, user, password);
+          HashSet<Integer> hs = new HashSet<Integer>();
 
-            //create the folder object and open it
-            Folder emailFolder = store.getFolder("INBOX");
-            emailFolder.open(Folder.READ_ONLY);
+          while(true)
+          {
+            Message[] messages = emailFolder.getMessages();
+            for (int i = 0, n = messages.length; i < n; i++)
+            {
+              Message message = messages[i];
 
-            boolean exit = false;
-            while(true) {
-                Message[] messages = emailFolder.getMessages();
+              if(!hs.contains(message.getMessageNumber()))
+              {
+                hs.add(message.getMessageNumber());
+                String subject = message.getSubject();
 
-                for (int i = 0, n = messages.length; i < n; i++) {
-                    Message message = messages[i];
+                System.out.println(subject);
 
-                    if(message.getSubject().equals("Test")){
-                        System.out.println("Found our guy!");
+                Address[] fromAddresses = message.getFrom();
+                String from = fromAddresses[0].toString();
 
-                        KeyValueList newVote = new KeyValueList();
-                        newVote.addPair("Scope", "SIS.Scope1");
-                        newVote.addPair("MessageType", "Alert");
-                        newVote.addPair("Sender", "InputProcessor");
-                        newVote.addPair("Receiver", "InterfaceServer");
-                        newVote.addPair("MessageCode", "701");
+                System.out.println(from);
 
-                        mEncoder.sendMsg(newVote);
-                        exit = true;
+                String body = null;
+                if(message.getContentType().startsWith("multipart"))
+                {
+                  Multipart mp = (Multipart)message.getContent();
+                  Part p;
+                  for (int k = 0; k < mp.getCount(); k++)
+                  {
+                    p = mp.getBodyPart(k);
+                    if(p.getContentType().startsWith("text/plain"))
+                    {
+                      body = (String)p.getContent();
+                      break;
                     }
+                  }
                 }
 
-                if(exit){
-                    break;
-                } else {
-                    TimeUnit.SECONDS.sleep(3);
-                }
+                else if(message.getContentType().startsWith("text/plain"))
+                  body = (String)message.getContent();
+
+                else
+                  continue;
+
+                System.out.println("Body:" + body);
+
+                KeyValueList newVote = new KeyValueList();
+                newVote.addPair("Scope", "SIS.Scope1");
+                newVote.addPair("MessageType", "Alert");
+                newVote.addPair("Sender", "InputProcessor");
+                newVote.addPair("Receiver", "InterfaceServer");
+                newVote.addPair("MessageCode", "701");
+                newVote.addPair("From", from);
+                newVote.addPair("Subject", subject);
+                newVote.addPair("Body", body);
+
+                mEncoder.sendMsg(newVote);
+              }
             }
-            //close the store and folder objects
-            emailFolder.close(false);
-            store.close();
+            TimeUnit.SECONDS.sleep(3);
+          }
+          //close the store and folder objects
+          //emailFolder.close(false);
+          //store.close();
 
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
