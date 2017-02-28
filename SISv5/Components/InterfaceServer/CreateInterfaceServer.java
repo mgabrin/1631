@@ -41,16 +41,12 @@ Set up a socket server waiting for the remote to connect.
 
 public class CreateInterfaceServer{
 	static Socket client;
-	static MsgDecoder mDecoder;//= new MsgDecoder(client.getInputStream());
-	static MsgEncoder mEncoder;//= new MsgEncoder(client.getOutputStream());
-
-   public static final int port=7999;
+	static MsgDecoder mDecoder;
+	static MsgEncoder mEncoder;
 
    public static void main(String[] args) throws Exception{
-    //ServerSocket server = new ServerSocket(port);
     ComponentBase compMy= new MyComponent();
-    //Socket client = server.accept();
-    client = connect(); //new Socket("127.0.0.1", 53217);
+    client = connect();
 
     try{
       mDecoder= new MsgDecoder(client.getInputStream());

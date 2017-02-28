@@ -25,5 +25,12 @@
         <Key>MessageCode</Key>
         <Value>701</Value>
     </Item>
-
+    <Item>
+        <Key>Voter</Key>
+        <Value>Mike</Value>
+    </Item>
+    <Item>
+        <Key>Vote</Key>
+        <Value>1</Value>
+    </Item>
 </Msg>
