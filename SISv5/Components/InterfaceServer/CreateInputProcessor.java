@@ -25,7 +25,6 @@ public class CreateInputProcessor {
         try{
             socket = new Socket("127.0.0.1", 53217);
             mEncoder = new MsgEncoder(socket.getOutputStream());
-            mDecoder = new MsgDecoder(socket.getInputStream());
             mEncoder.sendMsg(conn);
         } catch(Exception e){
             System.out.println(e);
@@ -54,70 +53,67 @@ public class CreateInputProcessor {
 
           //create the folder object and open it
           Folder emailFolder = store.getFolder("INBOX");
-          emailFolder.open(Folder.READ_ONLY);
-
-          HashSet<Integer> hs = new HashSet<Integer>();
 
           while(true)
           {
+            emailFolder.open(Folder.READ_ONLY);
             Message[] messages = emailFolder.getMessages();
             for (int i = 0, n = messages.length; i < n; i++)
             {
               Message message = messages[i];
+              String subject = message.getSubject();
 
-              if(!hs.contains(message.getMessageNumber()))
+              System.out.println(subject);
+
+              Address[] fromAddresses = message.getFrom();
+              String from = fromAddresses[0].toString();
+
+              System.out.println(from);
+
+              String body = null;
+              if(message.getContentType().startsWith("multipart"))
               {
-                hs.add(message.getMessageNumber());
-                String subject = message.getSubject();
-
-                System.out.println(subject);
-
-                Address[] fromAddresses = message.getFrom();
-                String from = fromAddresses[0].toString();
-
-                System.out.println(from);
-
-                String body = null;
-                if(message.getContentType().startsWith("multipart"))
+                Multipart mp = (Multipart)message.getContent();
+                Part p;
+                for (int k = 0; k < mp.getCount(); k++)
                 {
-                  Multipart mp = (Multipart)message.getContent();
-                  Part p;
-                  for (int k = 0; k < mp.getCount(); k++)
+                  p = mp.getBodyPart(k);
+                  if(p.getContentType().startsWith("text/plain"))
                   {
-                    p = mp.getBodyPart(k);
-                    if(p.getContentType().startsWith("text/plain"))
-                    {
-                      body = (String)p.getContent();
-                      break;
-                    }
+                    body = (String)p.getContent();
+                    break;
                   }
                 }
-
-                else if(message.getContentType().startsWith("text/plain"))
-                  body = (String)message.getContent();
-
-                else
-                  continue;
-
-                System.out.println("Body:" + body);
-
-                KeyValueList newVote = new KeyValueList();
-                newVote.addPair("Scope", "SIS.Scope1");
-                newVote.addPair("MessageType", "Alert");
-                newVote.addPair("Sender", "InputProcessor");
-                newVote.addPair("Receiver", "InterfaceServer");
-                newVote.addPair("MessageCode", "701");
-                newVote.addPair("From", from);
-                newVote.addPair("Subject", subject);
-                newVote.addPair("Body", body);
-
-                mEncoder.sendMsg(newVote);
               }
+
+              else if(message.getContentType().startsWith("text/plain"))
+                body = (String)message.getContent();
+
+              else
+                continue;
+
+              System.out.println("Body:" + body);
+
+              KeyValueList newVote = new KeyValueList();
+              newVote.addPair("Scope", "SIS.Scope1");
+              newVote.addPair("MessageType", "Alert");
+              newVote.addPair("Sender", "InputProcessor");
+              newVote.addPair("Receiver", "InterfaceServer");
+              newVote.addPair("MessageCode", "701");
+              newVote.addPair("From", from);
+              newVote.addPair("Subject", subject);
+              newVote.addPair("Body", body);
+
+              mEncoder.sendMsg(newVote);
+
+              //KeyValueList response = null;
+              //response = mDecoder.getMsg();
             }
+            emailFolder.close(false);
             TimeUnit.SECONDS.sleep(3);
           }
           //close the store and folder objects
-          //emailFolder.close(false);
+
           //store.close();
 
         } catch (NoSuchProviderException e) {

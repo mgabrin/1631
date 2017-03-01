@@ -13,7 +13,15 @@ class MyComponent implements ComponentBase {
 
 
     public KeyValueList processMsg(KeyValueList kvList) {
-        String msgId = kvList.getValue("Subject").equals("Initialize Tally Table") ? "703" : kvList.getValue("MessageCode");
+        String msgId = "";
+        if(kvList.getValue("Subject").equals("Initialize Tally Table")){
+            msgId = "703";
+        } else if(kvList.getValue("Subject").equals("Request Report")){
+            msgId = "702";
+        } else {
+            msgId = kvList.getValue("MessageCode");
+        }
+        
         KeyValueList conn = new KeyValueList();
 
         conn.addPair("Scope", "SIS.Scope1");
@@ -22,18 +30,25 @@ class MyComponent implements ComponentBase {
         conn.addPair("Receiver", "InputProcessor");
         conn.addPair("MessageCode", "711");
 
+        String messageBody = kvList.getValue("Body");
+        String[] lines = messageBody.split("\n");
+        String foundPasscode = "";
+        if (lines[0].startsWith("Passcode")){
+            foundPasscode = lines[0].split(":")[1].trim();
+        }
+
         //Create Component
         if (msgId.equals("21")) {
             System.out.println("Create Component");
         } else if (msgId.equals("22")) { //Kill component (done)
-            if(kvList.getValue("Passcode").equals(passcode)){
+            if(foundPasscode.equals(passcode)){
                 System.exit(0);
             } else {
                 conn.addPair("MessageCode", "711");
                 conn.addPair("Status", "2");
             }
         } else if (msgId.equals("23")) { //Connect to server (done)
-            if(kvList.getValue("Passcode").equals(passcode)){
+            if(foundPasscode.equals(passcode)){
                 KeyValueList conn2 = new KeyValueList();
                 conn2.addPair("Scope", "SIS.Scope1");
                 conn2.addPair("MessageType", "Connect");
@@ -61,16 +76,19 @@ class MyComponent implements ComponentBase {
                 //return null;
            // }
         } else if (msgId.equals("702")) { //Request Report (needs to be tested)
-            if(kvList.getValue("Passcode").equals(passcode)){
+            if(foundPasscode.equals(passcode)){
+                String values = "";
                 for(Map.Entry<String, Integer> entry : tallyTable.entrySet()){
-                    conn.addPair(entry.getKey(), entry.getValue().toString());
+                    values += entry.getKey() + ',' + entry.getValue().toString() + ';';
                 }
+                values = values.substring(0, values.length() - 1);
+                conn.addPair("Values", values);
             } else {
                 conn.addPair("Status", "2");
             }
         } else if (msgId.equals("703")) { //Initialize Tally Table 
-            if(kvList.getValue("Passcode").equals(passcode)){
-                String[] posters = kvList.getValue("Posters").split(";");
+            if(foundPasscode.equals(passcode) && lines[1] != null){
+                String[] posters = lines[1].split(";");
                 tallyTable = new HashMap<>();
                 for(String poster : posters){
                     tallyTable.put(poster, 0);

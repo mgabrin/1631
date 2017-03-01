@@ -6,3 +6,4 @@ javac MsgEncoder.java
 javac KeyValueList.java
 javac MyComponent.java
 javac CreateInterfaceServer.java
+java CreateInterfaceServer
