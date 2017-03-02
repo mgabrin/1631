@@ -1,5 +1,6 @@
 import java.util.*;
 import javax.mail.*;
+import javax.mail.internet.*;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +15,7 @@ public class CreateInputProcessor {
         String mailStoreType = "pop3";
         String username = "cs1631project@gmail.com";
         String password = "m1k3+b3n";
+        String sendHost = "smtp.gmail.com";
 
         KeyValueList conn = new KeyValueList();
         conn.addPair("Scope", "SIS.Scope1");
@@ -25,14 +27,16 @@ public class CreateInputProcessor {
         try{
             socket = new Socket("127.0.0.1", 53217);
             mEncoder = new MsgEncoder(socket.getOutputStream());
+            mDecoder = new MsgDecoder(socket.getInputStream());
             mEncoder.sendMsg(conn);
+            System.out.println(mDecoder.getMsg());
         } catch(Exception e){
             System.out.println(e);
         }
-        check(host, mailStoreType, username, password);
+        check(host, mailStoreType, username, password, sendHost);
     }
 
-    public static void check(String host, String storeType, String user, String password) {
+    public static void check(String host, String storeType, String user, String password, String sendHost) {
         try
         {
           //create properties field
@@ -41,6 +45,12 @@ public class CreateInputProcessor {
           properties.put("mail.pop3.host", host);
           properties.put("mail.pop3.port", "995");
           properties.put("mail.pop3.starttls.enable", "true");
+          properties.put("mail.pop3.ssl.enable", "true");
+
+          properties.put("mail.smtp.host", sendHost);
+          properties.put("mail.smtp.auth", "true");
+          properties.put("mail.smtp.starttls.enable", "true");
+
           Session emailSession = Session.getInstance(properties, new javax.mail.Authenticator(){
               protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
                   return new javax.mail.PasswordAuthentication(user, password);
@@ -106,8 +116,75 @@ public class CreateInputProcessor {
 
               mEncoder.sendMsg(newVote);
 
-              //KeyValueList response = null;
-              //response = mDecoder.getMsg();
+              KeyValueList response = mDecoder.getMsg();
+
+              String code = response.getValue("MessageCode");
+              String status = response.getValue("Status");
+              String responseSubject = null;
+              String responseText = null;
+
+              if(response.getValue("Kill").equals("True")){
+                  emailFolder.close(false);
+                  store.close();
+                  System.exit(0);
+              }
+
+              if(code.equals("711"))
+              {
+                if(status.equals("3"))
+                {
+                  responseSubject = "Vote Recorded";
+                  responseText = "Your vote was successfully recorded.\nThanks for voting!";
+                }
+                else
+                {
+                  responseSubject = "Vote Error";
+                  if(status.equals("1"))
+                    responseText = "Sorry, you have already voted.\nYour second vote was not recorded.";
+                  else
+                    responseText = "Sorry, you voted for an invalid candidate.\nPlease vote again for a valid candidate.";
+                }
+              }
+
+              else if(code.equals("712"))
+              {
+                if(status.equals("3"))
+                {
+                  responseSubject = "Success";
+                  responseText = "Your administrative action was successful.\n";
+                  if(!response.getValue("Values").equals(""))
+                  {
+                    String[] allCands = response.getValue("Values").split(";");
+                    String[] indCand = null;
+                    for(int k = 0; k < allCands.length; k++)
+                    {
+                      indCand = allCands[k].split(",");
+                      responseText += "\nCandidate: " + indCand[0];
+                      responseText += "\nVotes: " + indCand[1] + "\n";
+                    }
+                  }
+                }
+
+                else
+                {
+                  responseSubject = "Error";
+                  if(status.equals("4"))
+                    responseText = "Your password was invalid.\nPlease try again.";
+                  else
+                    responseText = "The candidate list was invalid.\nPlease provide a valid list delimeted by semicolons.";
+                }
+              }
+
+              else
+                continue;
+
+              MimeMessage msg = new MimeMessage(emailSession);
+              msg.setFrom(new InternetAddress(user));
+              msg.addRecipient(Message.RecipientType.TO, new InternetAddress(from));
+              msg.setSubject(responseSubject);
+              msg.setText(responseText);
+
+              Transport.send(msg);
             }
             emailFolder.close(false);
             TimeUnit.SECONDS.sleep(3);

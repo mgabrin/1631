@@ -70,6 +70,9 @@ public class CreateInterfaceServer{
           System.out.println("Outgoing Message:\n");
           System.out.println(kvResult);
           mEncoder.sendMsg(kvResult);
+          if(kvResult.getValue("Kill").equals("True")){
+              System.exit(0);
+          }
        }
       }
    }
