@@ -20,7 +20,7 @@ class MyComponent implements ComponentBase {
         conn.addPair("MessageType", "Alert");
         conn.addPair("Sender", "InterfaceServer");
         conn.addPair("Receiver", "InputProcessor");
-        
+
 
         String messageBody = kvList.getValue("Body");
         String[] lines = messageBody.split("\n");
@@ -61,13 +61,16 @@ class MyComponent implements ComponentBase {
         } else if (msgId.equals("701")) { //Cast Vote (done)
             conn.addPair("MessageCode", "711");
             if(kvList.getValue("Subject").toLowerCase().trim().equals("cs1631 vote")){
-                Integer status = checkPoster(kvList.getValue("Body")) ? (checkVoter(kvList.getValue("From")) ? 3 : 1) : 2;
+                String vote = lines[0].trim();
+                System.out.println(vote);
+                Integer status = checkPoster(vote) ? (checkVoter(kvList.getValue("From")) ? 3 : 1) : 2;
                 if(status == 3) {
                     voterTable.put(kvList.getValue("From"), kvList.getValue("From"));
-                    tallyTable.put(kvList.getValue("Body"), tallyTable.get(kvList.getValue("Body"))+1);
+                    tallyTable.put(vote, tallyTable.get(vote)+1);
                 }
                 conn.addPair("Status", status.toString());
             } else {
+                System.out.println("In here");
                 conn.addPair("Status", "2");
             }
         } else if (msgId.equals("702")) { //Request Report (needs to be tested)
@@ -89,16 +92,16 @@ class MyComponent implements ComponentBase {
             } else {
                 conn.addPair("Status", "4");
             }
-        } else if (msgId.equals("703")) { //Initialize Tally Table 
+        } else if (msgId.equals("703")) { //Initialize Tally Table
             conn.addPair("MessageCode", "712");
             if(foundPasscode.equals(passcode)){
                 int k = 1;
-                while(!lines[k].toLowerCase().startsWith("posters") && k < lines.length){
+                while(lines[k] != null && !lines[k].toLowerCase().startsWith("posters") && k < lines.length){
                     k++;
                 }
                 if(k<lines.length){
                     tallyTable = new HashMap<>();
-                    String[] posters = lines[k].substring(8).split("[;,]");
+                    String[] posters = lines[k].split(":")[1].trim().split("[;,]");
                     for(int i = 0; i< posters.length; i++){
                         tallyTable.put(posters[i], 0);
                     }
@@ -155,7 +158,7 @@ class MyComponent implements ComponentBase {
                     int result = Integer.parseInt(lines[i].split(":")[1].trim());
                     if(result > lines.length){
                         result = lines.length;
-                    } 
+                    }
                     return result;
                 } catch(Exception e){
                     return lines.length;
