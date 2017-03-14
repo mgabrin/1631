@@ -123,12 +123,6 @@ public class CreateInputProcessor {
               String responseSubject = null;
               String responseText = null;
 
-              if(response.getValue("Kill").equals("True")){
-                  emailFolder.close(false);
-                  store.close();
-                  System.exit(0);
-              }
-
               if(code.equals("711"))
               {
                 if(status.equals("3"))
@@ -150,17 +144,26 @@ public class CreateInputProcessor {
               {
                 if(status.equals("3"))
                 {
-                  responseSubject = "Success";
-                  responseText = "Your administrative action was successful.\n";
-                  if(!response.getValue("Values").equals(""))
+                  if(response.getValue("Kill").equals("False"))
                   {
-                    String[] allCands = response.getValue("Values").split(";");
-                    String[] indCand = null;
-                    for(int k = 0; k < allCands.length; k++)
+                    responseSubject = "Need Confirmation";
+                    responseText = "Reply with Admin passcode to close voting.";
+                  }
+
+                  else
+                  {
+                    responseSubject = "Success";
+                    responseText = "Your administrative action was successful.\n";
+                    if(!response.getValue("Values").equals(""))
                     {
-                      indCand = allCands[k].split(",");
-                      responseText += "\nCandidate: " + indCand[0];
-                      responseText += "\nVotes: " + indCand[1] + "\n";
+                      String[] allCands = response.getValue("Values").split(";");
+                      String[] indCand = null;
+                      for(int k = 0; k < allCands.length; k++)
+                      {
+                        indCand = allCands[k].split(",");
+                        responseText += "\nCandidate: " + indCand[0];
+                        responseText += "\nVotes: " + indCand[1] + "\n";
+                      }
                     }
                   }
                 }
@@ -183,8 +186,15 @@ public class CreateInputProcessor {
               msg.addRecipient(Message.RecipientType.TO, new InternetAddress(from));
               msg.setSubject(responseSubject);
               msg.setText(responseText);
-
+              System.out.println("Sending");
               Transport.send(msg);
+              System.out.println("Sent");
+
+              if(response.getValue("Kill").equals("True")){
+                  emailFolder.close(false);
+                  store.close();
+                  System.exit(0);
+              }
             }
             emailFolder.close(false);
             TimeUnit.SECONDS.sleep(3);

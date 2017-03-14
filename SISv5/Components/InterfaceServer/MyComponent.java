@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 class MyComponent implements ComponentBase {
-
+    static boolean kill = false;
+    
     static String passcode = "m1k3+b3n";
     HashMap<String, String> voterTable = new HashMap<>();
     HashMap<String, Integer> tallyTable = new HashMap<>();
-
 
     public KeyValueList processMsg(KeyValueList kvList) {
         String msgId = getIdFromSubject(kvList);
@@ -34,8 +34,12 @@ class MyComponent implements ComponentBase {
         } else if (msgId.equals("22")) { //Kill component (done)
             conn.addPair("MessageCode", "712");
             if(foundPasscode.equals(passcode)){
-                conn.addPair("Kill", "True");
-                //System.exit(0);
+                if(!kill){
+                    conn.addPair("Kill", "False");
+                    kill = true;
+                } else{
+                    conn.addPair("Kill", "True");
+                }
             } else {
                 conn.addPair("Status", "4");
             }
@@ -70,7 +74,6 @@ class MyComponent implements ComponentBase {
                 }
                 conn.addPair("Status", status.toString());
             } else {
-                System.out.println("In here");
                 conn.addPair("Status", "2");
             }
         } else if (msgId.equals("702")) { //Request Report (needs to be tested)
@@ -144,7 +147,7 @@ class MyComponent implements ComponentBase {
             return "703";
         } else if(kvList.getValue("Subject").toLowerCase().equals("request report")){
             return "702";
-        } else if(kvList.getValue("Subject").toLowerCase().equals("end voting")){
+        } else if(kvList.getValue("Subject").toLowerCase().equals("end voting") || kvList.getValue("Subject").toLowerCase().equals("re:need confirmation")){
             return "22";
         } else {
             return kvList.getValue("MessageCode");
