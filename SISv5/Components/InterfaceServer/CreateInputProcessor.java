@@ -13,7 +13,7 @@ public class CreateInputProcessor {
     public static void main(String[] args) {
         String host = "pop.gmail.com";
         String mailStoreType = "pop3";
-        String username = "cs1631project@gmail.com";
+        String username = "cs1631voting@gmail.com";
         String password = "m1k3+b3n";
         String sendHost = "smtp.gmail.com";
 
@@ -48,6 +48,7 @@ public class CreateInputProcessor {
           properties.put("mail.pop3.ssl.enable", "true");
 
           properties.put("mail.smtp.host", sendHost);
+          properties.put("mail.smtp.port", "587");
           properties.put("mail.smtp.auth", "true");
           properties.put("mail.smtp.starttls.enable", "true");
 

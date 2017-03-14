@@ -33,6 +33,8 @@ class MyComponent implements ComponentBase {
             System.out.println("Create Component");
         } else if (msgId.equals("22")) { //Kill component (done)
             conn.addPair("MessageCode", "712");
+            conn.addPair("Status", "3");
+            System.out.println("HERE");
             if(foundPasscode.equals(passcode)){
                 if(!kill){
                     conn.addPair("Kill", "False");
@@ -147,7 +149,7 @@ class MyComponent implements ComponentBase {
             return "703";
         } else if(kvList.getValue("Subject").toLowerCase().equals("request report")){
             return "702";
-        } else if(kvList.getValue("Subject").toLowerCase().equals("end voting") || kvList.getValue("Subject").toLowerCase().equals("re:need confirmation")){
+        } else if(kvList.getValue("Subject").toLowerCase().equals("end voting") || kvList.getValue("Subject").toLowerCase().equals("re: need confirmation")){
             return "22";
         } else {
             return kvList.getValue("MessageCode");
