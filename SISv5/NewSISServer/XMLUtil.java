@@ -15,10 +15,12 @@ public class XMLUtil {
 	public static List<KeyValueList> extractToKV(String url) throws Exception {
 		List<KeyValueList> kvLists = new ArrayList<KeyValueList>();
 		try {
+			System.out.println("IN ;lksjd");
 			JAXBContext context = JAXBContext.newInstance(Message.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			Message message = (Message) unmarshaller.unmarshal(new URL(url));
 			List<Msg> msgs = message.getMsgs();
+			System.out.println(msgs);
 			if (msgs != null) {
 				for (Msg msg : msgs) {
 					kvLists.add(generateKV(msg));

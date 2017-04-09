@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
+import { 
+    socketConnect, 
+    socketProvider, 
+} from 'socket.io-react';
+import io from 'socket.io-client';
+import ws from 'ws';
 
 class StartVoting extends Component {
     constructor(props) {
@@ -7,8 +13,19 @@ class StartVoting extends Component {
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
     }
+    socket = null
+    ws = new Websocket('127.0.0.1:53217')
+
+    componentWillMount(){
+        conn.addPair("Scope", "SIS.Scope1");
+        conn.addPair("MessageType", "Connect");
+        conn.addPair("Role", "Basic");
+        conn.addPair("Name", "InputProcessor");
+        ws.send('(Scope$$$SIS.Scope1$$$MessageType$$$Connect$$$Role$$$Basic$$$Name$$$GUI$$$)')
+    }
+
     startVoting(){
-        console.log(this.state.password);
+        console.log("Sent");
     }
 
     endVoting() {
