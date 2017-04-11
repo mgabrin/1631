@@ -1,23 +1,70 @@
 import React, { Component } from 'react';
 import './App.css';
 
+var request = require('request');
+
 class AddPoster extends Component {
      constructor(props) {
         super(props);
         this.addPoster = this.addPoster.bind(this);
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleCategoryChange = this.handleCategoryChange.bind(this);
+        this.handleCreatorYearChange = this.handleCreatorYearChange.bind(this);
+        this.handleIdChange = this.handleIdChange.bind(this);
     }
 
     addPoster(){
-        console.log('add poster');
+        request.post({
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            url: 'http://localhost:3001/addPoster',
+            form: {
+                username: this.state.username, 
+                password: this.state.password,
+                posterId: this.state.posterId,
+                category: this.state.category,
+                year: this.state.creatorYear
+            }
+        }, (err, res, body) => {
+            if(body.Success === 'False' || res.statusCode !== 200){
+                alert('Error adding poster. Make sure username and password are correct and that all necessary fields are filled out.');
+            } else {
+                alert('Successfully Added Poster!');
+            } 
+        });
     }
 
     state = {
         username: '',
         password: '',
-        postername: '',
-        creatorGender: '',
+        posterId: '',
+        category: '',
         creatorYear: ''
     }
+
+    handleUsernameChange(event){
+        this.setState({username: event.target.value});
+    }
+
+    handlePasswordChange(event){
+        this.setState({password: event.target.value});
+    }
+
+    handleIdChange(event){
+        this.setState({posterId:event.target.value});
+    }
+
+    handleCreatorYearChange(event){
+        this.setState({creatorYear: event.target.value});
+    }
+
+    handleCategoryChange(event){
+        this.setState({category: event.target.value});
+    }
+
+
 
     render() {
         return (
@@ -28,23 +75,21 @@ class AddPoster extends Component {
             </label>
             <br />
             <br />
-            <label>Password: <input type="text" name="name" className="inputBox" value={this.state.password} onChange={this.handlePasswordChange}/>
+            <label>Password: <input type="password" name="name" className="inputBox" value={this.state.password} onChange={this.handlePasswordChange}/>
             </label>
             <br />
             <br />
-            <label>Poster ID: <input type="text" name="name" className="inputBox" value={this.state.password} onChange={this.handlePasswordChange}/>
+            <hr width="50%" />
+            <br />
+            <label>Poster ID: <input type="text" name="name" className="inputBox" value={this.state.posterId} onChange={this.handleIdChange}/>
             </label>
             <br />
             <br />
-            <label>Category: <input type="text" name="name" className="inputBox" value={this.state.password} onChange={this.handlePasswordChange}/>
+            <label>Category: <input type="text" name="name" className="inputBox" value={this.state.category} onChange={this.handleCategoryChange}/>
             </label>
             <br />
             <br />
-            <label>Creator Gender: <input type="text" name="name" className="inputBox" value={this.state.password} onChange={this.handlePasswordChange}/>
-            </label>
-            <br />
-            <br />
-            <label>Creator Year: <input type="text" name="name" className="inputBox" value={this.state.password} onChange={this.handlePasswordChange}/>
+            <label>Creator Year: <input type="text" name="name" className="inputBox" value={this.state.creatorYear} onChange={this.handleCreatorYearChange}/>
             </label>
             <br />
             <br />

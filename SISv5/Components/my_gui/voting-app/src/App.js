@@ -3,6 +3,7 @@ import './App.css';
 import StartVoting from './StartVoting';
 import AddPoster from './AddPoster';
 import Other from './Other';
+import Vote from './Vote';
 
 class App extends Component {
   constructor(props) {
@@ -25,6 +26,8 @@ class App extends Component {
           <button onClick={() => this.showTab('startVoting')}>Handle Voting Status</button>
           <button className="tablinks" onClick={() => this.showTab('addPoster')}>Add Poster</button>
           <button className="tablinks" onClick={ () => this.showTab('other')}>Get Results</button>
+          <button className="tablinks" onClick={ () => this.showTab('vote')}>Vote</button>
+
         </div>
         {this.state.tabName === 'startVoting' && 
           <StartVoting />
@@ -34,6 +37,9 @@ class App extends Component {
         }
         {this.state.tabName === 'other' && 
           <Other />
+        }
+        {this.state.tabName === 'vote' &&
+          <Vote />
         }
       </div>
     );
