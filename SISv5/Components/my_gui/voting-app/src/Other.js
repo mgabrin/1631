@@ -7,6 +7,7 @@ const apiUrl = 'http://localhost:3001'
 class Other extends Component {
     componentWillMount(){
       request.get(apiUrl + '/currentResults', (err, res, body) =>{
+          console.log('component mounted')
           var parsedBody = JSON.parse(body);
           console.log(body)
           this.setState({candidates: parsedBody.Candidates})
@@ -23,7 +24,6 @@ class Other extends Component {
     }
 
     render() {
-        var that = this
         return (
         <div className="App">
             <h1>Vote</h1>

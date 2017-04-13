@@ -15,9 +15,9 @@ class Vote extends Component {
         request.get(apiUrl + '/votingStatus', (err, res, body) =>{
             var parsedBody = JSON.parse(body);
             this.setState({votingStatus: parsedBody.Status})
-        });
+        })
 
-        request.get(apiUrl + '/candidates', (err, res, body) => {
+        request.get(apiUrl + '/currentResults', (err, res, body) => {
             console.log(body)
             var parsedBody = JSON.parse(body);
             this.setState({candidates: parsedBody.Candidates})
@@ -26,6 +26,7 @@ class Vote extends Component {
     }
 
     handleVote(){
+        console.log('vote')
         request.post({
             headers: {
                 'Content-Type': 'application/json'
@@ -59,7 +60,7 @@ class Vote extends Component {
         votingStatus: false,
         candidates: ['hello', 'world'],
         vote: null,
-        username: null
+        username: ''
     }
 
     render() {
@@ -72,10 +73,10 @@ class Vote extends Component {
             <br />
             <br />
             {this.state.candidates.map(function(object, i){
-                return <p key={i}><input type="radio" onChange={() => that.handleSelection(object)} name="candidate"/>&#09;{object}</p> 
+                return <p key={i}><input type="radio" onChange={() => that.handleSelection(object)} name="candidate"/>&#09;{object.name}</p> 
             })}
             
-            <button className="buttonStyle" disabled={!this.state.votingStatus || !this.state.username} onClick={() => this.handleVote()}>Vote</button>
+            <button className="buttonStyle" disabled={!this.state.votingStatus} onClick={() => this.handleVote()}>Vote</button>
             <br />
             {this.state.votingStatus &&
                 <h2>Voting Open</h2>

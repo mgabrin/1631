@@ -1,0 +1,30 @@
+[
+    {
+        "name": "test 1",
+        "description": "Start Voting Success",
+        "action": "startVoting",
+        "data": {
+            "username": "admin",
+            "password": "m1k3+b3n"
+        },
+        "expectedOutcome": "True"
+    },
+    {
+        "name": "test 2",
+        "description": "End Voting Failure",
+        "action": "endVoting",
+        "data": {
+            "username": "admin",
+            "password": "wrongPassword"
+        },
+        "expectedOutcome": "True"
+    },
+    {
+        "name": "test 3",
+        "action": "vote"
+    },
+    {
+        "name": "test 4",
+        "action": "addPoster"
+    }
+]

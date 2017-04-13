@@ -4,6 +4,7 @@ import StartVoting from './StartVoting';
 import AddPoster from './AddPoster';
 import Other from './Other';
 import Vote from './Vote';
+import Test from './Test';
 
 class App extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class App extends Component {
           <button className="tablinks" onClick={() => this.showTab('addPoster')}>Add Poster</button>
           <button className="tablinks" onClick={ () => this.showTab('other')}>Get Results</button>
           <button className="tablinks" onClick={ () => this.showTab('vote')}>Vote</button>
+          <button className="tablinks" onClick={ () => this.showTab('test')}>Test</button>
 
         </div>
         {this.state.tabName === 'startVoting' && 
@@ -40,6 +42,9 @@ class App extends Component {
         }
         {this.state.tabName === 'vote' &&
           <Vote />
+        }
+        {this.state.tabName === 'test' &&
+          <Test />
         }
       </div>
     );

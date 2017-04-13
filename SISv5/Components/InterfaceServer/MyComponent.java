@@ -19,7 +19,7 @@ class MyComponent implements ComponentBase {
         conn.addPair("Scope", "SIS.Scope1");
         conn.addPair("MessageType", "Alert");
         conn.addPair("Sender", "InterfaceServer");
-        conn.addPair("Receiver", "InputProcessor");
+        conn.addPair("Receiver", "GUI");
 
 
         String messageBody = kvList.getValue("Body");
@@ -33,7 +33,7 @@ class MyComponent implements ComponentBase {
             System.out.println("Create Component");
         } else if (msgId.equals("22")) { //Kill component (done)
             conn.addPair("MessageCode", "712");
-            conn.addPair("Status", "3");
+            conn.addPair("Status", "3"); //Success
             System.out.println("HERE");
             if(foundPasscode.equals(passcode)){
                 if(!kill){
@@ -43,7 +43,7 @@ class MyComponent implements ComponentBase {
                     conn.addPair("Kill", "True");
                 }
             } else {
-                conn.addPair("Status", "4");
+                conn.addPair("Status", "4"); //Fail
             }
         } else if (msgId.equals("23")) { //Connect to server (done)
             conn.addPair("MessageCode", "712");
@@ -93,9 +93,9 @@ class MyComponent implements ComponentBase {
                 }
                 values = values.substring(0, values.length() - 1);
                 conn.addPair("Values", values);
-                conn.addPair("Status", "3");
+                conn.addPair("Status", "3"); //Success
             } else {
-                conn.addPair("Status", "4");
+                conn.addPair("Status", "4"); //Fail
             }
         } else if (msgId.equals("703")) { //Initialize Tally Table
             conn.addPair("MessageCode", "712");
@@ -105,7 +105,6 @@ class MyComponent implements ComponentBase {
                     k++;
                 }
                 if(k<lines.length){
-                    tallyTable = new HashMap<>();
                     String[] posters = lines[k].split(":")[1].trim().split("[;,]");
                     for(int i = 0; i< posters.length; i++){
                         tallyTable.put(posters[i], 0);

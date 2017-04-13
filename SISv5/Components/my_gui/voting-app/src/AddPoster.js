@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-
-var request = require('request');
+import { addPosterRequest } from './Utilities';
 
 class AddPoster extends Component {
      constructor(props) {
@@ -15,24 +14,20 @@ class AddPoster extends Component {
     }
 
     addPoster(){
-        request.post({
-            headers: {
-                'Content-Type': 'application/json'
-            }, 
-            url: 'http://localhost:3001/addPoster',
-            form: {
-                username: this.state.username, 
-                password: this.state.password,
-                posterId: this.state.posterId,
-                category: this.state.category,
-                year: this.state.creatorYear
-            }
-        }, (err, res, body) => {
-            if(body.Success === 'False' || res.statusCode !== 200){
-                alert('Error adding poster. Make sure username and password are correct and that all necessary fields are filled out.');
-            } else {
+        var poster = {
+            username: this.state.username,
+            password: this.state.password,
+            posterId: this.state.posterId,
+            category: this.state.category,
+            creatorYear: this.state.creatorYear
+        }
+        addPosterRequest(this.state.username, this.state.password, poster)
+        .then((parsedBody) =>{
+            if(parsedBody.Success === 'True'){
                 alert('Successfully Added Poster!');
-            } 
+            } else {
+                alert('Error adding poster. Make sure username and password are correct and that all necessary fields are filled out.');
+            }
         });
     }
 

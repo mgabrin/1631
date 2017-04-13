@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 var request = require('request');
+import { startVotingRequest, endVotingRequest } from './Utilities';
 
 const apiUrl = 'http://localhost:3001'
 
@@ -19,45 +20,34 @@ class StartVoting extends Component {
     }
 
     startVoting(){
-        request.post({
-            headers: {
-                'Content-Type': 'application/json'
-            }, 
-            url: 'http://localhost:3001/startVoting',
-            form: {
-                username: this.state.username, 
-                password: this.state.password
-            }
-        }, (err, res, body) => {
-            var parsedBody = JSON.parse(body)
-            if(parsedBody.Success === 'False' || res.statusCode !== 200){
-                alert('Error starting voting. Make sure the username and password are correct.');
-            } else {
+        startVotingRequest(this.state.username, this.state.password)
+        .then(parsedBody =>{
+            console.log(parsedBody)
+            if(parsedBody.Success === 'True'){
                 this.setState({votingStatus: parsedBody.Status})
                 alert('Successfully started voting!');
-            }    
+            } else {
+                console.log('in here')
+                alert('Error starting voting. Make sure the username and password are correct.');
+            }
         });
+        
     }
 
     endVoting() {
-        request.post({
-            headers: {
-                'Content-Type': 'application/json'
-            }, 
-            url: 'http://localhost:3001/endVoting',
-            form: {
-                username: this.state.username, 
-                password: this.state.password
-            }
-        }, (err, res, body) => {
-            var parsedBody = JSON.parse(body)
-            if(parsedBody.Success === 'False' || res.statusCode !== 200){
-                alert('Error starting voting. Make sure the username and password are correct.');
-            } else {
-                this.setState({votingStatus: parsedBody.Status});
-                alert('Successfully ended voting! Go to the results tab to view the final tally.');
-            } 
-        });
+        var r = confirm("Are you sure you want to end voting?")
+        if (r){
+            endVotingRequest(this.state.username, this.state.password)
+            .then(parsedBody => {
+                if(parsedBody.Success === 'True'){
+                    this.setState({votingStatus: parsedBody.Status})
+                    alert('Successfully ended voting!');
+                } else {
+                    alert('Error ending voting. Make sure the username and password are correct.');
+                }
+            });
+        }
+        
     }
 
     handleUsernameChange(event){

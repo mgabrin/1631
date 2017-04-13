@@ -1,6 +1,12 @@
 .App {
   text-align: center;
 }
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid #ccc;
+}
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
