@@ -16,7 +16,7 @@ class StartVoting extends Component {
         request.get(apiUrl + '/votingStatus', (err, res, body) =>{
             var parsedBody = JSON.parse(body);
             this.setState({votingStatus: parsedBody.Status})
-        })
+        });
     }
 
     startVoting(){

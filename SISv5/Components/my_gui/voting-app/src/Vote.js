@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
+import { voteRequest } from './Utilities';
+
 var request = require('request');
 
 const apiUrl = 'http://localhost:3001'
@@ -26,24 +28,17 @@ class Vote extends Component {
     }
 
     handleVote(){
-        console.log('vote')
-        request.post({
-            headers: {
-                'Content-Type': 'application/json'
-            }, 
-            url: 'http://localhost:3001/vote',
-            form: {
-                username: this.state.username, 
-                vote: this.state.vote
-            }
-        }, (err, res, body) => {
-            var parsedBody = JSON.parse(body)
-            if(parsedBody.Success === 'False' || res.statusCode !== 200){
-                alert('Error! ' + parsedBody.Message);
-            } else {
+        voteRequest(this.state.username, this.state.vote)
+        .then((parsedBody) => {
+            if(parsedBody.Success === 'Success'){
                 alert('Successful Vote!');
-            } 
+            } else {
+                alert('Error! ' + parsedBody.Message);
+            }
         });
+         
+       
+        
     }
 
     handleSelection(object){

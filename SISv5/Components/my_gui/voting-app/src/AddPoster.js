@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import { addPosterRequest } from './Utilities';
 
+var request = require('request')
+const apiUrl = 'http://localhost:3001'
+
 class AddPoster extends Component {
      constructor(props) {
         super(props);
@@ -13,10 +16,15 @@ class AddPoster extends Component {
         this.handleIdChange = this.handleIdChange.bind(this);
     }
 
+    componentWillMount(){
+        request.get(apiUrl + '/votingStatus', (err, res, body) =>{
+            var parsedBody = JSON.parse(body);
+            this.setState({votingStatus: parsedBody.Status})
+        });
+    }
+
     addPoster(){
         var poster = {
-            username: this.state.username,
-            password: this.state.password,
             posterId: this.state.posterId,
             category: this.state.category,
             creatorYear: this.state.creatorYear
@@ -32,6 +40,7 @@ class AddPoster extends Component {
     }
 
     state = {
+        votingStatus: false,
         username: '',
         password: '',
         posterId: '',
@@ -89,6 +98,12 @@ class AddPoster extends Component {
             <br />
             <br />
             <button className="buttonStyle" onClick={() => this.addPoster()}>Add Poster</button>
+            {this.state.votingStatus &&
+                <h2>Voting Open</h2>
+            }
+            {!this.state.votingStatus &&
+                <h2>Voting Closed!</h2>
+            }
         </div>
         );
     }

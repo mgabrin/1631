@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import './App.css';
 var request = require('request');
 var _ = require('lodash');
-import { startVotingRequest, endVotingRequest } from './Utilities';
+import { 
+    startVotingRequest, 
+    endVotingRequest,
+    addPosterRequest,
+    getCurrentResultsRequest,
+    voteRequest
+} from './Utilities';
 
 const apiUrl = 'http://localhost:3001'
 
@@ -36,7 +42,6 @@ class Test extends Component {
     }
 
     runTests(){
-        console.log('in runTests')
         var data = this.state.tests
         _.forEach(data, test => {
             if(test.action === 'startVoting'){
@@ -45,29 +50,51 @@ class Test extends Component {
                     console.log(parsedBody)
                     if (parsedBody.Success === test.expectedOutcome){
                         test.Status = 'Success'
-                        this.setState({tests: data})
                     } else {
                         test.Status = 'Fail'
-                        this.setState({tests: data})
                     }
+                    this.setState({tests: data})
                 });
             } else if(test.action === 'endVoting'){
                 endVotingRequest(test.data.username, test.data.password)
                 .then(parsedBody => {
                    if (parsedBody.Success === test.expectedOutcome){
                         test.Status = 'Success'
-                        this.setState({tests: data})
                     } else {
                         test.Status = 'Fail'
-                        this.setState({tests: data})
                     } 
+                    this.setState({tests: data})
                 })
             } else if(test.action === 'addPoster'){
-
+                addPosterRequest(test.data.user, test.data.password, test.data.poster)
+                .then(parsedBody => {
+                    if (parsedBody.Success === test.expectedOutcome){
+                        test.Status = 'Success'
+                    } else {
+                        test.Status = 'Fail'
+                    }
+                    this.setState({tests: data})
+                })
             } else if(test.action === 'vote'){
-
+                voteRequest(test.data.user, test.data.vote)
+                .then(parsedBody => {
+                    if (parsedBody.Message === test.expectedOutcome){
+                        test.Status = 'Success'
+                    } else {
+                        test.Status = 'Fail'
+                    }
+                    this.setState({tests: data})
+                });
             } else if(test.action === 'getResults'){
-
+                getCurrentResultsRequest()
+                .then(parsedBody => {
+                    if (parsedBody.Candidates === test.Candidates){
+                        test.Status = 'Success';
+                    } else {
+                        test.Status = 'Fail';
+                    }
+                    this.setState({tests: data})
+                })
             }
         });
     }

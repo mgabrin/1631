@@ -3,6 +3,8 @@ var net = require('net-socket');
 var bodyParser = require('body-parser');
 
 const PASSCODE = 'm1k3+b3n';
+const USERNAME = 'admin';
+
 var votingStatus = false;
 var addedPoster = false;
 
@@ -25,12 +27,6 @@ app.get('/votingStatus', (req, res) => [
         Status: votingStatus
     })
 ]);
-
-app.get('/candidates', (req, res) => {
-    res.json({
-        Candidates: ['Test 1', 'Test 2', 'Test 3', 'Test 4']
-    });
-})
 
 app.get('/currentResults', (req, res) => {
     if(addedPoster){
@@ -80,7 +76,7 @@ app.get('/currentResults', (req, res) => {
 });
 
 app.post('/startVoting', (req, res) => {
-    if (req.body.password !== PASSCODE) {
+    if (req.body.password !== PASSCODE || req.body.username !== USERNAME) {
         res.json({
             'Success':'False',
             'Message':'Invalid Passcode'
@@ -96,10 +92,10 @@ app.post('/startVoting', (req, res) => {
 });
 
 app.post('/endVoting', (req, res) => {
-    if (req.body.password !== PASSCODE) {
+    if (req.body.password !== PASSCODE || req.body.username !== USERNAME) {
         res.json({
             'Success':'False',
-            'Message':'Invalid Passcode'
+            'Message':'Invalid Credentials'
         });
     } else {
         var returnObj;
@@ -111,7 +107,7 @@ app.post('/endVoting', (req, res) => {
         MessageCode$$$701$$$\
         From$$$mike$$$\
         Subject$$$End Voting$$$\
-        Body$$$Passcode:m1k3+b3n$$$)\n');
+        Body$$$Passcode:' + PASSCODE + '$$$)\n');
         socket.on('data', (data) => {
             try{
                 console.log('End voting read');
@@ -121,7 +117,6 @@ app.post('/endVoting', (req, res) => {
                 var serverIndex = _.findIndex(entries, (entry) => { return entry === 'InterfaceServer'})
                 var statusIndex = _.findIndex(entries, (entry) => { return entry === 'Status'})
                 if(confirmIndex !== -1 && serverIndex != -1){
-                    console.log('in here now')
                     res.json({
                         Success: 'True',
                         Status: votingStatus
@@ -141,13 +136,17 @@ app.post('/endVoting', (req, res) => {
 });
 
 app.post('/addPoster', (req, res) => {
-    addedPoster = true;
-    if (req.body.password !== PASSCODE) {
+    if (req.body.password !== PASSCODE || 
+    req.body.username !== USERNAME|| 
+    !req.body.posterId || 
+    !req.body.category || 
+    !req.body.creatorYear) {
         res.json({
             'Success':'False',
             'Message':'Invalid Passcode'
         });
     } else {
+        addedPoster = true;
         var posterName = req.body.posterId
         var returnObj;
         console.log('writing')
@@ -161,14 +160,11 @@ app.post('/addPoster', (req, res) => {
         Body$$$Passcode:m1k3+b3n\nposters:' + posterName + '$$$)\n');
         socket.on('data', (data) => {
             try{
-                console.log('Add poster read')
-                console.log(data)
                 var entries = data.split('$$$');
                 var confirmIndex = _.findIndex(entries, (entry) => { return entry === '3'})
                 var serverIndex = _.findIndex(entries, (entry) => { return entry === 'InterfaceServer'})
                 var statusIndex = _.findIndex(entries, (entry) => { return entry === 'Status'})
                 if(confirmIndex !== -1 && serverIndex != -1){
-                    console.log('in here now')
                     res.json({
                         Success: 'True',
                         Status: votingStatus
@@ -188,10 +184,51 @@ app.post('/addPoster', (req, res) => {
 });
 
 app.post('/vote', (req, res) => {
-    res.json({
-        'Success': 'False',
-        'Message': 'User has already voted'
+    socket.write('(Scope$$$SIS.Scope1$$$\
+        MessageType$$$Alert$$$\
+        Sender$$$GUI$$$\
+        Receiver$$$InterfaceServer$$$\
+        MessageCode$$$701$$$\
+        From$$$' + req.body.user + '$$$\
+        Subject$$$cs1631 vote$$$\
+        Body$$$' + req.body.voteName + '$$$)\n');
+    socket.on('data', (data) => {
+        console.log('in here?')
+        var entries = data.split('$$$');
+        
+        //If the vote was a success, there will be a 3 in the return data
+        var successIndex = _.findIndex(entries, (entry) => { return entry === '3'})
+        //If the selected poster was not valid, then there will be a 2 in the
+        //Returned data
+        var invalidPosterIndex = _.findIndex(entries, (entry) => { return entry === '2'})
+        //If the voter already voted, then there will be a 1 in the returned data
+        var invalidVoterIndex = _.findIndex(entries, (entry) => { return entry === '1'})
+        
+        var returnCodeIndex = _.findIndex(entries, (entry) => {return entry === '711'})
+        try{
+        if(successIndex !== -1 && returnCodeIndex !== -1){
+            res.json({
+                'Success': 'True',
+                'Message': 'Success'
+            })
+        } else if(returnCodeIndex !== -1){
+            if(invalidPosterIndex != -1){
+                res.json({
+                    'Success': 'False',
+                    'Message': 'Invalid Poster'
+                });
+            } else if(invalidVoterIndex != -1){
+                res.json({
+                    'Success': 'False',
+                    'Message': 'User has already voted'
+                });
+            }
+        }
+        } catch(e){
+            console.log(e)
+        }
     })
+    
 });
 
 

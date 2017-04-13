@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
-var request = require('request');
-
-const apiUrl = 'http://localhost:3001'
+import { getCurrentResultsRequest } from './Utilities';
 
 class Other extends Component {
     componentWillMount(){
-      request.get(apiUrl + '/currentResults', (err, res, body) =>{
-          console.log('component mounted')
-          var parsedBody = JSON.parse(body);
-          console.log(body)
-          this.setState({candidates: parsedBody.Candidates})
-      });
+        getCurrentResultsRequest()
+        .then(parsedBody => {
+            this.setState({candidates: parsedBody.Candidates})
+        })
     }
 
 

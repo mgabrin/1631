@@ -46,14 +46,41 @@ export function addPosterRequest(user, pass, poster){
             }, 
             url: apiUrl + '/addPoster',
             form: {
-                username: poster.username, 
-                password: poster.password,
+                username: user, 
+                password: pass,
                 posterId: poster.posterId,
                 category: poster.category,
-                year: poster.creatorYear
+                creatorYear: poster.creatorYear
             }
         }, (err, res, body) => {
             var parsedBody = JSON.parse(body)
+            resolve(parsedBody)
+        });
+    });
+}
+
+export function voteRequest(user, vote){
+    return new Promise((resolve, reject) => {
+        request.post({
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            url: apiUrl + '/vote',
+            form: {
+                username: user, 
+                voteName: vote.name
+            }
+        }, (err, res, body) => {
+            var parsedBody = JSON.parse(body)
+            resolve(parsedBody);
+        });
+    })
+}
+
+export function getCurrentResultsRequest(){
+    return new Promise((resolve, reject) => {
+        request.get(apiUrl + '/currentResults', (err, res, body) => {
+            var parsedBody = JSON.parse(body);
             resolve(parsedBody)
         });
     });
