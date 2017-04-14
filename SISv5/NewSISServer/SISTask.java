@@ -40,7 +40,6 @@ public class SISTask implements Runnable {
                 // attempt to read and decode a message, see MsgDecoder for
                 // details
                 kvList = decoder.getMsg();
-
                 // process that message
                 ProcessMsg(kvList);
             }
@@ -136,24 +135,6 @@ public class SISTask implements Runnable {
                 ComponentInfo info = new ComponentInfo(scope, type, name);
                 SISServer.mapping.put(info, new ComponentConnection());
                 System.out.println(info);
-
-                /*
-                 * SISServer.mapping.entrySet().stream()
-                 * .filter(x -> (x.getKey().scope.startsWith(scope)
-                 * && x.getKey().componentType == ComponentType.Debugger)
-                 * && x.getValue().encoder != null)
-                 * .forEach(x -> {
-                 * try {
-                 * // re-route this message to each qualified
-                 * // component
-                 * x.getValue().encoder.sendMsg(kvList);
-                 * } catch (Exception e) {
-                 * // TODO Auto-generated catch block
-                 * System.out.println("ERROR: Fail to send "
-                 * + kvList + ", abort subtask");
-                 * }
-                 * });
-                 */
             }
 
             break;

@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 class MyComponent implements ComponentBase {
-    static boolean kill = false;
-    
     static String passcode = "m1k3+b3n";
     HashMap<String, String> voterTable = new HashMap<>();
     HashMap<String, Integer> tallyTable = new HashMap<>();
@@ -19,8 +17,6 @@ class MyComponent implements ComponentBase {
         conn.addPair("Scope", "SIS.Scope1");
         conn.addPair("MessageType", "Alert");
         conn.addPair("Sender", "InterfaceServer");
-        conn.addPair("Receiver", "GUI");
-
 
         String messageBody = kvList.getValue("Body");
         String[] lines = messageBody.split("\n");
@@ -31,20 +27,24 @@ class MyComponent implements ComponentBase {
         //Create Component
         if (msgId.equals("21")) {
             System.out.println("Create Component");
-        } else if (msgId.equals("22")) { //Kill component (done)
+        } else if (msgId.equals("22") || msgId.equals("702")) { //End voting or Get Results
             conn.addPair("MessageCode", "712");
-            conn.addPair("Status", "3"); //Success
-            System.out.println("HERE");
-            if(foundPasscode.equals(passcode)){
-                if(!kill){
-                    conn.addPair("Kill", "False");
-                    kill = true;
-                } else{
-                    conn.addPair("Kill", "True");
-                }
-            } else {
-                conn.addPair("Status", "4"); //Fail
+            conn.addPair("Status", "3");
+            String values = "";
+            for(Map.Entry<String, Integer> entry : tallyTable.entrySet())
+              values += entry.getKey() + ',' + entry.getValue() + ';';
+
+            values = values.substring(0, values.length() - 1);
+            conn.addPair("Values", values);
+
+            if(msgId.equals("22"))
+            {
+              conn.addPair("Receiver", "PosterComponent");
+              conn.addPair("Kill", "True");
             }
+            else
+              conn.addPair("Receiver", "GUI");
+
         } else if (msgId.equals("23")) { //Connect to server (done)
             conn.addPair("MessageCode", "712");
             if(foundPasscode.equals(passcode)){
@@ -64,7 +64,8 @@ class MyComponent implements ComponentBase {
             System.out.println("Deactivate Component");
         } else if (msgId.equals("26")) { //Acknowledgement
             conn.addPair("MessageType", "Confirm");
-        } else if (msgId.equals("701")) { //Cast Vote (done)
+        } else if (msgId.equals("701")) { //Cast Vote - COMPLETE
+            conn.addPair("Receiver", kvList.getValue("Sender"));
             conn.addPair("MessageCode", "711");
             if(kvList.getValue("Subject").toLowerCase().trim().equals("cs1631 vote")){
                 String vote = lines[0].trim();
@@ -72,50 +73,22 @@ class MyComponent implements ComponentBase {
                 Integer status = checkPoster(vote) ? (checkVoter(kvList.getValue("From")) ? 3 : 1) : 2;
                 if(status == 3) {
                     voterTable.put(kvList.getValue("From"), kvList.getValue("From"));
-                    tallyTable.put(vote, tallyTable.get(vote)+1);
+                    tallyTable.put(vote, tallyTable.get(vote) + 1);
+                    conn.addPair("Forward", "True");
                 }
                 conn.addPair("Status", status.toString());
             } else {
                 conn.addPair("Status", "2");
             }
-        } else if (msgId.equals("702")) { //Request Report (needs to be tested)
-            conn.addPair("MessageCode", "712");
-            if(foundPasscode.equals(passcode)){
-                int numWinners = getNumWinners(lines);
-                int i = 0;
-                String values = "";
-                for(Map.Entry<String, Integer> entry : tallyTable.entrySet()){
-                    if(i < numWinners){
-                        values += entry.getKey() + ',' + entry.getValue().toString() + ';';
-                    } else {
-                        break;
-                    }
-                }
-                values = values.substring(0, values.length() - 1);
-                conn.addPair("Values", values);
-                conn.addPair("Status", "3"); //Success
-            } else {
-                conn.addPair("Status", "4"); //Fail
-            }
-        } else if (msgId.equals("703")) { //Initialize Tally Table
-            conn.addPair("MessageCode", "712");
-            if(foundPasscode.equals(passcode)){
-                int k = 1;
-                while(lines[k] != null && !lines[k].toLowerCase().startsWith("posters") && k < lines.length){
-                    k++;
-                }
-                if(k<lines.length){
-                    String[] posters = lines[k].split(":")[1].trim().split("[;,]");
-                    for(int i = 0; i< posters.length; i++){
-                        tallyTable.put(posters[i], 0);
-                    }
-                    conn.addPair("Status", "3");
-                } else{
-                    conn.addPair("Status", "5");
-                }
-            } else {
-                conn.addPair("Status", "4");
-            }
+        } else if (msgId.equals("703")) { //Add Poster - COMPLETE
+            conn.addPair("Receiver", "GUI");
+            conn.addPair("Status", "3");
+            conn.addPair("MessageCode", msgId);
+
+            String id = kvList.getValue("Id");
+            tallyTable.put(id, 0);
+
+            conn.addPair("Forward", "True");
         }
         return conn;
     }
@@ -153,22 +126,5 @@ class MyComponent implements ComponentBase {
         } else {
             return kvList.getValue("MessageCode");
         }
-    }
-
-    private Integer getNumWinners(String[] lines){
-        for(int i = 0; i<lines.length; i++){
-            if(lines[i].toLowerCase().startsWith("winners")){
-                try{
-                    int result = Integer.parseInt(lines[i].split(":")[1].trim());
-                    if(result > lines.length){
-                        result = lines.length;
-                    }
-                    return result;
-                } catch(Exception e){
-                    return lines.length;
-                }
-            }
-        }
-        return lines.length;
     }
 }

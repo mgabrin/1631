@@ -124,7 +124,7 @@ public class CreateInputProcessor {
               String responseSubject = null;
               String responseText = null;
 
-              if(code.equals("711"))
+              if(code.equals("711") && !response.getValue("Kill").equals("True"))
               {
                 if(status.equals("3"))
                 {
@@ -141,7 +141,7 @@ public class CreateInputProcessor {
                 }
               }
 
-              else if(code.equals("712"))
+              /*else if(code.equals("712"))
               {
                 if(status.equals("3"))
                 {
@@ -177,7 +177,7 @@ public class CreateInputProcessor {
                   else
                     responseText = "The candidate list was invalid.\nPlease provide a valid list delimeted by semicolons.";
                 }
-              }
+              }*/
 
               else
                 continue;
@@ -185,17 +185,24 @@ public class CreateInputProcessor {
               MimeMessage msg = new MimeMessage(emailSession);
               msg.setFrom(new InternetAddress(user));
               msg.addRecipient(Message.RecipientType.TO, new InternetAddress(from));
+
+              if(response.getValue("Kill").equals("True")){
+                  msg.setSubject("Voting is Over");
+                  msg.setText("Sorry, voting has ended.");
+                  System.out.println("Sending");
+                  Transport.send(msg);
+                  emailFolder.close(false);
+                  store.close();
+                  System.exit(0);
+              }
+
               msg.setSubject(responseSubject);
               msg.setText(responseText);
               System.out.println("Sending");
               Transport.send(msg);
               System.out.println("Sent");
 
-              if(response.getValue("Kill").equals("True")){
-                  emailFolder.close(false);
-                  store.close();
-                  System.exit(0);
-              }
+
             }
             emailFolder.close(false);
             TimeUnit.SECONDS.sleep(3);

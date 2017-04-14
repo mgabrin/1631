@@ -29,6 +29,7 @@ app.get('/votingStatus', (req, res) => [
 ]);
 
 app.get('/currentResults', (req, res) => {
+    console.log('in here');
     if(addedPoster){
         console.log('added is good')
         socket.write('(Scope$$$SIS.Scope1$$$\
@@ -41,8 +42,6 @@ app.get('/currentResults', (req, res) => {
             Body$$$Passcode:m1k3+b3n$$$)\n');
         socket.on('data', (data) => {
             try{
-                console.log('Current results read');
-                console.log(data)
                 var entries = data.split('$$$');
                 var confirmIndex = _.findIndex(entries, (entry) => { return entry === '3'})
                 var serverIndex = _.findIndex(entries, (entry) => { return entry === 'InterfaceServer'})
@@ -157,7 +156,9 @@ app.post('/addPoster', (req, res) => {
         MessageCode$$$701$$$\
         From$$$mike$$$\
         Subject$$$Initialize Tally Table$$$\
-        Body$$$Passcode:m1k3+b3n\nposters:' + posterName + '$$$)\n');
+        Id$$$' + req.body.posterId + '$$$\
+        Year$$$' + req.body.creatorYear + '$$$\
+        Category$$$' + req.body.category + ')\n');
         socket.on('data', (data) => {
             try{
                 var entries = data.split('$$$');
@@ -184,18 +185,20 @@ app.post('/addPoster', (req, res) => {
 });
 
 app.post('/vote', (req, res) => {
+    console.log(req.body.username)
     socket.write('(Scope$$$SIS.Scope1$$$\
         MessageType$$$Alert$$$\
         Sender$$$GUI$$$\
         Receiver$$$InterfaceServer$$$\
         MessageCode$$$701$$$\
-        From$$$' + req.body.user + '$$$\
+        From$$$' + req.body.username + '$$$\
         Subject$$$cs1631 vote$$$\
         Body$$$' + req.body.voteName + '$$$)\n');
+
     socket.on('data', (data) => {
-        console.log('in here?')
+        console.log('voted')
+        console.log(data)
         var entries = data.split('$$$');
-        
         //If the vote was a success, there will be a 3 in the return data
         var successIndex = _.findIndex(entries, (entry) => { return entry === '3'})
         //If the selected poster was not valid, then there will be a 2 in the

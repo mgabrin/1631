@@ -30,7 +30,9 @@ class Vote extends Component {
     handleVote(){
         voteRequest(this.state.username, this.state.vote)
         .then((parsedBody) => {
-            if(parsedBody.Success === 'Success'){
+            console.log(parsedBody)
+            console.log(parsedBody.Success)
+            if(parsedBody.Success === 'True'){
                 alert('Successful Vote!');
             } else {
                 alert('Error! ' + parsedBody.Message);

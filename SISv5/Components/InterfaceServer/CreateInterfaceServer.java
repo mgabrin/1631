@@ -70,7 +70,17 @@ public class CreateInterfaceServer{
           System.out.println("Outgoing Message:\n");
           System.out.println(kvResult);
           mEncoder.sendMsg(kvResult);
-          if(kvResult.getValue("Kill").equals("True")){
+          if(kvResult.getValue("Forward").equals("True"))
+          {
+            kvResult.removePair("Receiver");
+            kvResult.addPair("Receiver", "PosterComponent");
+            mEncoder.sendMsg(kvResult);
+          }
+          if(kvResult.getValue("Kill").equals("True"))
+          {
+              kvResult.removePair("Receiver");
+              kvResult.addPair("Receiver", "InputProcessor");
+              mEncoder.sendMsg(kvResult);
               System.exit(0);
           }
        }
@@ -86,7 +96,3 @@ static Socket connect() throws IOException
         return socket;
     }
 }
-
-
-
-

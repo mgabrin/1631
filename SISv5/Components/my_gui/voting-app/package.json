@@ -5,6 +5,7 @@
   "dependencies": {
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "tcp-socket": "^0.5.8",
     "ws": "^2.2.3"
   },
   "devDependencies": {
