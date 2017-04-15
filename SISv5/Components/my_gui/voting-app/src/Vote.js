@@ -20,7 +20,6 @@ class Vote extends Component {
         })
 
         request.get(apiUrl + '/currentResults', (err, res, body) => {
-            console.log(body)
             var parsedBody = JSON.parse(body);
             this.setState({candidates: parsedBody.Candidates})
         })
@@ -30,8 +29,6 @@ class Vote extends Component {
     handleVote(){
         voteRequest(this.state.username, this.state.vote)
         .then((parsedBody) => {
-            console.log(parsedBody)
-            console.log(parsedBody.Success)
             if(parsedBody.Success === 'True'){
                 alert('Successful Vote!');
             } else {
@@ -44,8 +41,6 @@ class Vote extends Component {
     }
 
     handleSelection(object){
-        console.log('handle selection');
-        console.log(object)
         this.setState({vote: object})
     }
 

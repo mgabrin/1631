@@ -22,12 +22,10 @@ class StartVoting extends Component {
     startVoting(){
         startVotingRequest(this.state.username, this.state.password)
         .then(parsedBody =>{
-            console.log(parsedBody)
             if(parsedBody.Success === 'True'){
                 this.setState({votingStatus: parsedBody.Status})
                 alert('Successfully started voting!');
             } else {
-                console.log('in here')
                 alert('Error starting voting. Make sure the username and password are correct.');
             }
         });

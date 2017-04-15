@@ -69,13 +69,13 @@ class MyComponent implements ComponentBase {
             conn.addPair("MessageCode", "711");
             if(kvList.getValue("Subject").toLowerCase().trim().equals("cs1631 vote")){
                 String vote = lines[0].trim();
-                System.out.println(vote);
                 Integer status = checkPoster(vote) ? (checkVoter(kvList.getValue("From")) ? 3 : 1) : 2;
                 if(status == 3) {
                     voterTable.put(kvList.getValue("From"), kvList.getValue("From"));
                     tallyTable.put(vote, tallyTable.get(vote) + 1);
                     conn.addPair("Forward", "True");
                 }
+                conn.addPair("Id", vote);
                 conn.addPair("Status", status.toString());
             } else {
                 conn.addPair("Status", "2");
@@ -84,6 +84,9 @@ class MyComponent implements ComponentBase {
             conn.addPair("Receiver", "GUI");
             conn.addPair("Status", "3");
             conn.addPair("MessageCode", msgId);
+            conn.addPair("Id", kvList.getValue("Id"));
+            conn.addPair("Year", kvList.getValue("Year"));
+            conn.addPair("Category", kvList.getValue("Category"));
 
             String id = kvList.getValue("Id");
             tallyTable.put(id, 0);

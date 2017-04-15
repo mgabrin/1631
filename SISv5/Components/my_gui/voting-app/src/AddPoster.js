@@ -31,6 +31,7 @@ class AddPoster extends Component {
         }
         addPosterRequest(this.state.username, this.state.password, poster)
         .then((parsedBody) =>{
+            console.log(parsedBody);
             if(parsedBody.Success === 'True'){
                 alert('Successfully Added Poster!');
             } else {
@@ -61,11 +62,13 @@ class AddPoster extends Component {
     }
 
     handleCreatorYearChange(event){
-        this.setState({creatorYear: event.target.value});
+        console.log(event)
+        this.setState({creatorYear: event});
     }
 
     handleCategoryChange(event){
-        this.setState({category: event.target.value});
+        console.log(event)
+        this.setState({category: event});
     }
 
 
@@ -89,12 +92,17 @@ class AddPoster extends Component {
             </label>
             <br />
             <br />
-            <label>Category: <input type="text" name="name" className="inputBox" value={this.state.category} onChange={this.handleCategoryChange}/>
-            </label>
+            <label>Category:</label><br /><br />
+            <input type="radio" onChange={() => this.handleCategoryChange('game')} name="category"/>&#09;Game<br />
+            <input type="radio" onChange={() => this.handleCategoryChange('ai')} name="category"/>&#09;AI<br />
+            <input type="radio" onChange={() => this.handleCategoryChange('multimedia')} name="category"/>&#09;Multimedia<br />
+            <input type="radio" onChange={() => this.handleCategoryChange('utility')} name="category"/>&#09;Utlility<br />
+            <input type="radio" onChange={() => this.handleCategoryChange('machinelearning')} name="category"/>&#09;Machine Learning<br />
             <br />
             <br />
-            <label>Creator Year: <input type="text" name="name" className="inputBox" value={this.state.creatorYear} onChange={this.handleCreatorYearChange}/>
-            </label>
+            <label>Creator Year:</label><br />
+            <input type="radio" onChange={() => this.handleCreatorYearChange('2017')} name="year"/>&#09;2017<br />
+            <input type="radio" onChange={() => this.handleCreatorYearChange('2016')} name="year"/>&#09;2016<br />
             <br />
             <br />
             <button className="buttonStyle" onClick={() => this.addPoster()}>Add Poster</button>

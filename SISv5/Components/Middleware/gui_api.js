@@ -7,6 +7,8 @@ const USERNAME = 'admin';
 
 var votingStatus = false;
 var addedPoster = false;
+var finalData = null;
+var finalTotals = null;
 
 
 var _ = require('lodash');
@@ -29,49 +31,63 @@ app.get('/votingStatus', (req, res) => [
 ]);
 
 app.get('/currentResults', (req, res) => {
-    console.log('in here');
     if(addedPoster){
-        console.log('added is good')
-        socket.write('(Scope$$$SIS.Scope1$$$\
-            MessageType$$$Alert$$$\
-            Sender$$$GUI$$$\
-            Receiver$$$InterfaceServer$$$\
-            MessageCode$$$701$$$\
-            From$$$mike$$$\
-            Subject$$$Request Report$$$\
-            Body$$$Passcode:m1k3+b3n$$$)\n');
-        socket.on('data', (data) => {
-            try{
-                var entries = data.split('$$$');
-                var confirmIndex = _.findIndex(entries, (entry) => { return entry === '3'})
-                var serverIndex = _.findIndex(entries, (entry) => { return entry === 'InterfaceServer'})
-                var statusIndex = _.findIndex(entries, (entry) => { return entry === 'Status'})
-                if(confirmIndex !== -1 && serverIndex !== -1 && statusIndex !== -1){
-                    console.log('found our guys')
-                    var posterInfo = entries[9]
-                    var candidates = posterInfo.split(';')
-                    var returnCandidates = []
-                    _.forEach(candidates, (candidate) => {
-                        var elements = candidate.split(',');
-                        returnCandidates.push({
-                            'name': elements[0],
-                            'total': elements[1]
-                        })
-                    });
-                    console.log(returnCandidates)
-                    res.json({
-                        Candidates: returnCandidates
-                    });
+        if(!votingStatus){
+            res.json({
+                Candidates: finalTotals
+            })
+        } else {
+            console.log('added is good')
+            socket.write('(Scope$$$SIS.Scope1$$$\
+                MessageType$$$Alert$$$\
+                Sender$$$GUI$$$\
+                Receiver$$$InterfaceServer$$$\
+                MessageCode$$$701$$$\
+                From$$$mike$$$\
+                Subject$$$Request Report$$$\
+                Body$$$Passcode:m1k3+b3n$$$)\n');
+            socket.on('data', (data) => {
+                try{
+                    var entries = data.split('$$$');
+                    var confirmIndex = _.findIndex(entries, (entry) => { return entry === '3'})
+                    var serverIndex = _.findIndex(entries, (entry) => { return entry === 'InterfaceServer'})
+                    var statusIndex = _.findIndex(entries, (entry) => { return entry === 'Status'})
+                    var valuesIndex = _.findIndex(entries, (entry) => { return entry === 'Values'})
+                    if(confirmIndex !== -1 && serverIndex !== -1 && statusIndex !== -1 && valuesIndex != -1){
+                        var posterInfo = entries[valuesIndex + 1]
+                        var candidates = posterInfo.split(';')
+                        var returnCandidates = []
+                        _.forEach(candidates, (candidate) => {
+                            var elements = candidate.split(',');
+                            returnCandidates.push({
+                                'name': elements[0],
+                                'total': elements[1]
+                            })
+                        });
+                        finalTotals = returnCandidates
+                        res.json({
+                            Candidates: returnCandidates
+                        });
+                    }
+                } catch(e){
+                    console.log(e);
                 }
-            } catch(e){
-                console.log(e);
-            }
-        });
+            });
+        }
     } else {
         res.json({
             Candidates: []
         })
     }
+});
+
+app.get('/getFullData', (req, res) => {
+    console.log('IN GET FULL DATA');
+    res.json({
+        Success: 'True',
+        Status: votingStatus,
+        data: finalData
+    })
 });
 
 app.post('/startVoting', (req, res) => {
@@ -97,6 +113,7 @@ app.post('/endVoting', (req, res) => {
             'Message':'Invalid Credentials'
         });
     } else {
+        console.log('in here');
         var returnObj;
         votingStatus = false;
         socket.write('(Scope$$$SIS.Scope1$$$\
@@ -113,12 +130,26 @@ app.post('/endVoting', (req, res) => {
                 console.log(data)
                 var entries = data.split('$$$');
                 var confirmIndex = _.findIndex(entries, (entry) => { return entry === '3'})
-                var serverIndex = _.findIndex(entries, (entry) => { return entry === 'InterfaceServer'})
+                var serverIndex = _.findIndex(entries, (entry) => { return entry === 'PosterComponent'})
                 var statusIndex = _.findIndex(entries, (entry) => { return entry === 'Status'})
-                if(confirmIndex !== -1 && serverIndex != -1){
+                var categoriesIndex = _.findIndex(entries, (entry) => { return entry === 'Categories'})
+                if(confirmIndex !== -1 && serverIndex != -1 && categoriesIndex != -1){
+                    var posterInfo = entries[categoriesIndex + 1]
+                    var candidates = posterInfo.split(';')
+                    var returnCandidates = []
+                    _.forEach(candidates, (candidate) => {
+                        var elements = candidate.split(',');
+                        returnCandidates.push({
+                            'name': elements[0],
+                            'total': elements[1],
+                            'year': elements[2] 
+                        })
+                    });
+                    finalData = returnCandidates
                     res.json({
                         Success: 'True',
-                        Status: votingStatus
+                        Status: votingStatus,
+                        data: returnCandidates
                     });    
                 } else if(serverIndex != -1){
                     res.json({
@@ -142,13 +173,12 @@ app.post('/addPoster', (req, res) => {
     !req.body.creatorYear) {
         res.json({
             'Success':'False',
-            'Message':'Invalid Passcode'
+            'Message':'Invalid Entry'
         });
     } else {
         addedPoster = true;
         var posterName = req.body.posterId
         var returnObj;
-        console.log('writing')
         socket.write('(Scope$$$SIS.Scope1$$$\
         MessageType$$$Alert$$$\
         Sender$$$GUI$$$\
@@ -160,6 +190,7 @@ app.post('/addPoster', (req, res) => {
         Year$$$' + req.body.creatorYear + '$$$\
         Category$$$' + req.body.category + ')\n');
         socket.on('data', (data) => {
+            console.log(data);
             try{
                 var entries = data.split('$$$');
                 var confirmIndex = _.findIndex(entries, (entry) => { return entry === '3'})
@@ -170,11 +201,6 @@ app.post('/addPoster', (req, res) => {
                         Success: 'True',
                         Status: votingStatus
                     });    
-                } else if(serverIndex != -1){
-                    res.json({
-                        Success: 'False', 
-                        Status: votingStatus
-                    })
                 }
             } catch(e){
                 console.log(e);

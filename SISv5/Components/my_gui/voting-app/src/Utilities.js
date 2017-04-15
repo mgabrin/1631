@@ -32,6 +32,7 @@ export function endVotingRequest(user, pass){
             }
         }, (err, res, body) => {
             var parsedBody = JSON.parse(body);
+            console.log(parsedBody)
             resolve(parsedBody);
         });
     })
@@ -81,7 +82,17 @@ export function getCurrentResultsRequest(){
     return new Promise((resolve, reject) => {
         request.get(apiUrl + '/currentResults', (err, res, body) => {
             var parsedBody = JSON.parse(body);
-            resolve(parsedBody)
+            resolve(parsedBody);
         });
     });
+}
+
+export function getTotalResultsRequest(){
+    return new Promise((resolve, reject) =>{
+        request.get(apiUrl + '/getFullData', (err, res, body) => {
+            var parsedBody = JSON.parse(body);
+            console.log(parsedBody)
+            resolve(parsedBody);
+        })
+    })
 }
