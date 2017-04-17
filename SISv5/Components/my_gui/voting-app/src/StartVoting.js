@@ -81,10 +81,10 @@ class StartVoting extends Component {
             <button className="buttonStyle" disabled={!this.state.votingStatus} onClick={() => this.endVoting()}>End Voting</button>
             <br />
             {this.state.votingStatus &&
-                <h2>Voting Open</h2>
+                <h2>Voting Open!</h2>
             }
             {!this.state.votingStatus &&
-                <h2>Voting Closed!</h2>
+                <h2>Voting Closed! Restart server to ensure data integrity.</h2>
             }
         </div>
         );

@@ -1,0 +1,61 @@
+[
+    {
+        "action": "startVoting",
+        "description": "Test that initializes voting",
+        "data" : {
+            "username": "admin",
+            "password": "m1k3+b3n"
+        },
+        "expectedOutcome" : "True"
+    },
+    {
+        "action": "addPoster",
+        "description": "Tests that initializes voting",
+        "data" : {
+            "user": "admin",
+            "password": "m1k3+b3n",
+            "poster": {
+                "posterId": "1",
+                "category": "game",
+                "creatorYear": "2017"
+            }
+        },
+        "expectedOutcome" : "True"
+    },
+    {
+        "action": "vote",
+        "description": "Tests voting",
+        "data" : {
+            "user": "test",
+            "vote": {
+                "name": "1"
+            }
+        },
+        "expectedOutcome" : "Success"
+    },
+    {
+        "action": "getResults",
+        "description": "Tests getting the results. actually looks at the result object",
+        "data" : {
+            "username": "admin",
+            "password": "m1k3+b3n"
+        },
+        "expectedOutcome" : {
+            "Candidates": [
+                {
+                    "name":"1",
+                    "total":"1"
+                }
+            ]   
+        } 
+    },
+    {
+        "action": "endVoting",
+        "description": "Tests end voting",
+        "data" : {
+            "username": "admin",
+            "password": "m1k3+b3n"
+        },
+        "expectedOutcome" : "True"
+    }
+]

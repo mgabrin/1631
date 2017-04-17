@@ -14,6 +14,7 @@ export function startVotingRequest(user, pass){
         }
     }, (err, res, body) => {
         var parsedBody = JSON.parse(body)
+        console.log(parsedBody)
         resolve(parsedBody);
     });
    });
@@ -91,6 +92,8 @@ export function getTotalResultsRequest(){
     return new Promise((resolve, reject) =>{
         request.get(apiUrl + '/getFullData', (err, res, body) => {
             var parsedBody = JSON.parse(body);
+            console.log('here')
+            console.log(parsedBody)
             console.log(parsedBody)
             resolve(parsedBody);
         })

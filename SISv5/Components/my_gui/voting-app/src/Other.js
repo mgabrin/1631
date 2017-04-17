@@ -20,11 +20,8 @@ class Other extends Component {
 
         getTotalResultsRequest()
         .then((parsedBody) => {
-            console.log('here');
-            console.log(parsedBody)
             var seventeenData = _.filter(parsedBody.data, (entry) => {
                 if(entry){
-                    console.log(entry.year)
                     return entry.year === '2017'
                 }
             });
@@ -34,9 +31,6 @@ class Other extends Component {
                             })
                             .sum()
                             .value();
-            console.log(seventeenSum);
-            console.log('Seventeen data');
-            console.log(seventeenData);
 
             _.forEach(seventeenData, entry => {
                 entry['percentage'] = ((entry.total / seventeenSum) * 100).toFixed(2);
@@ -58,9 +52,7 @@ class Other extends Component {
             _.forEach(sixteenData, entry => {
                 entry['percentage'] = ((entry.total / sixteenSum) * 100).toFixed(2);
             });
-            console.log(sixteenSum)
-            console.log('sixteenData');
-            console.log(sixteenData)
+
             var totalData = {
                 'sixteenData': sixteenData,
                 'seventeenData': seventeenData

@@ -91,7 +91,8 @@ app.get('/getFullData', (req, res) => {
 });
 
 app.post('/startVoting', (req, res) => {
-    if (req.body.password !== PASSCODE || req.body.username !== USERNAME) {
+    console.log(votingStatus)
+    if (req.body.password !== PASSCODE || req.body.username !== USERNAME || votingStatus) {
         res.json({
             'Success':'False',
             'Message':'Invalid Passcode'
@@ -107,7 +108,7 @@ app.post('/startVoting', (req, res) => {
 });
 
 app.post('/endVoting', (req, res) => {
-    if (req.body.password !== PASSCODE || req.body.username !== USERNAME) {
+    if (req.body.password !== PASSCODE || req.body.username !== USERNAME || !votingStatus) {
         res.json({
             'Success':'False',
             'Message':'Invalid Credentials'
