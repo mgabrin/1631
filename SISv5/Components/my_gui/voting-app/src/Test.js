@@ -40,7 +40,7 @@ class Test extends Component {
                 that.setState({tests: data});
                 that.runTests()
             } catch(e){
-                alert('There was a problem opening the file!');
+                alert('There was a problem opening the file! ' + e);
             }
         }
         reader.readAsText(event.target.files[0]);
@@ -49,10 +49,10 @@ class Test extends Component {
     runTests(){
         var data = this.state.tests
         console.log(data)
-        each(data, (test, callback) => {
+        data.forEach((test) => {
             //Test for startVoting returns Success on successful start and Fail on failed start
             if(test.action === 'startVoting'){
-                startVotingRequest(test.data.username, test.data.password)
+                startVotingRequest(test.data.user, test.data.password)
                 .then(parsedBody => {
                     console.log('startVoting')
                     if (parsedBody.Success === test.expectedOutcome){
@@ -65,7 +65,7 @@ class Test extends Component {
             //Test for end voting returns Success on successful end and Fail on failed end
             } else if(test.action === 'endVoting'){
                 setTimeout(() => {
-                    endVotingRequest(test.data.username, test.data.password)
+                    endVotingRequest(test.data.user, test.data.password)
                     .then(parsedBody => {
                         console.log('end voting')
                     if (parsedBody.Success === test.expectedOutcome){
@@ -90,16 +90,31 @@ class Test extends Component {
                 })
             //Vote test returns Success on successful vote and Fail
             } else if(test.action === 'vote'){
-                voteRequest(test.data.user, test.data.vote)
-                .then(parsedBody => {
-                    console.log('vote')
-                    if (parsedBody.Message === test.expectedOutcome){
-                        test.Status = 'Success'
-                    } else {
-                        test.Status = 'Fail'
-                    }
-                    this.setState({tests: data})
-                });
+                if(test.description === "Same user tries to vote twice"){
+                    setTimeout(() => {
+                        voteRequest(test.data.user, test.data.vote)
+                        .then(parsedBody => {
+                            console.log('vote')
+                            if (parsedBody.Success === test.expectedOutcome){
+                                test.Status = 'Success'
+                            } else {
+                                test.Status = 'Fail'
+                            }
+                            this.setState({tests: data})
+                        });
+                    }, 1000)
+                } else {
+                    voteRequest(test.data.user, test.data.vote)
+                    .then(parsedBody => {
+                        console.log('vote')
+                        if (parsedBody.Success === test.expectedOutcome){
+                            test.Status = 'Success'
+                        } else {
+                            test.Status = 'Fail'
+                        }
+                        this.setState({tests: data})
+                    });
+                }
             } else if(test.action === 'getResults'){
                 setTimeout(() =>{
                     getCurrentResultsRequest()
@@ -115,7 +130,6 @@ class Test extends Component {
                     })
                 }, 800);
             }
-            callback()
         });
     }
 

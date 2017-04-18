@@ -1,0 +1,20 @@
+[
+  {
+    "action":"startVoting",
+    "description":"Tries to start voting with an invalid passcode",
+    "data":{
+      "user":"admin",
+      "password":"invalid"
+    },
+    "expectedOutcome":"False"
+  },
+  {
+    "action":"startVoting",
+    "description":"Opens the system to start accepting votes",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n"
+    },
+    "expectedOutcome":"True"
+  }
+]

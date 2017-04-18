@@ -1,0 +1,20 @@
+[
+  {
+    "action":"endVoting",
+    "description":"Tries to end voting with an invalid passcode",
+    "data":{
+      "user":"admin",
+      "password":"invalid"
+    },
+    "expectedOutcome":"False"
+  },
+  {
+    "action":"endVoting",
+    "description":"Closes voting and gets votes per poster and per category",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n"
+    },
+    "expectedOutcome":"True"
+  }
+]

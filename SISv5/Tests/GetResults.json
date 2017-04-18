@@ -1,0 +1,27 @@
+[
+  {
+    "action":"getResults",
+    "description":"Tries to get results with an invalid passcode",
+    "data":{
+      "user":"admin",
+      "password":"invalid"
+    },
+    "expectedOutcome":"False"
+  },
+  {
+    "action":"getResults",
+    "description":"Gets how many votes each poster received",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n"
+    },
+    "expectedOutcome":{
+      "Candidates":[
+        {
+          "name":"1",
+          "total":"5"
+        }
+      ]
+    }
+  }
+]

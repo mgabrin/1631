@@ -91,8 +91,7 @@ app.get('/getFullData', (req, res) => {
 });
 
 app.post('/startVoting', (req, res) => {
-    console.log(votingStatus)
-    if (req.body.password !== PASSCODE || req.body.username !== USERNAME || votingStatus) {
+    if (req.body.password !== PASSCODE || req.body.username !== USERNAME ) {
         res.json({
             'Success':'False',
             'Message':'Invalid Passcode'
@@ -172,6 +171,7 @@ app.post('/addPoster', (req, res) => {
     !req.body.posterId || 
     !req.body.category || 
     !req.body.creatorYear) {
+        console.log('in here');
         res.json({
             'Success':'False',
             'Message':'Invalid Entry'

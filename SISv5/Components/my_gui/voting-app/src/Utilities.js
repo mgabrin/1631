@@ -42,22 +42,29 @@ export function endVotingRequest(user, pass){
 
 export function addPosterRequest(user, pass, poster){
     return new Promise((resolve, reject) => {
-        request.post({
-            headers: {
-                'Content-Type': 'application/json'
-            }, 
-            url: apiUrl + '/addPoster',
-            form: {
-                username: user, 
-                password: pass,
-                posterId: poster.posterId,
-                category: poster.category,
-                creatorYear: poster.creatorYear
-            }
-        }, (err, res, body) => {
-            var parsedBody = JSON.parse(body)
-            resolve(parsedBody)
-        });
+        if(!poster){
+            resolve({
+                'Success':'False',
+                'Message':'No poster given'
+            });
+        } else{
+            request.post({
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+                url: apiUrl + '/addPoster',
+                form: {
+                    username: user, 
+                    password: pass,
+                    posterId: poster.posterId,
+                    category: poster.category,
+                    creatorYear: poster.creatorYear
+                }
+            }, (err, res, body) => {
+                var parsedBody = JSON.parse(body)
+                resolve(parsedBody)
+            });
+        }
     });
 }
 

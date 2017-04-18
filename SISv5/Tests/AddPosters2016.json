@@ -1,0 +1,221 @@
+[
+  {
+    "action":"addPoster",
+    "description":"Tries to add a poster with an invalid passcode",
+    "data":{
+      "user":"admin",
+      "password":"invalid"
+    },
+    "expectedOutcome":"False"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 1",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"1",
+        "category":"game",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 2",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"2",
+        "category":"game",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 3",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"3",
+        "category":"game",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 4",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"4",
+        "category":"multimedia",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 5",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"5",
+        "category":"multimedia",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 6",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"6",
+        "category":"multimedia",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 7",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"7",
+        "category":"AI",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 8",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"8",
+        "category":"AI",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 9",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"9",
+        "category":"AI",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 10",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"10",
+        "category":"utility",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 11",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"11",
+        "category":"utility",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 12",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"12",
+        "category":"utility",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 13",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"13",
+        "category":"machine learning",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 14",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"14",
+        "category":"machine learning",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  },
+  {
+    "action":"addPoster",
+    "description":"Creates poster with ID 15",
+    "data":{
+      "user":"admin",
+      "password":"m1k3+b3n",
+      "poster":{
+        "posterId":"15",
+        "category":"machine learning",
+        "creatorYear":"2016"
+      }
+    },
+    "expectedOutcome":"True"
+  }
+]
